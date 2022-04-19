@@ -1,9 +1,10 @@
 class Empresa():
-    def __init__(self, fecha,nombre, mensajes, servicios):
+    def __init__(self, fecha,nombre, cantidad):
         self.fecha = fecha
         self.nombre = nombre
-        self.mensajes = mensajes
-        self.servicios = servicios
+        self.cantidad = cantidad
+        self.mensajes = []
+        self.servicios = []
 
 class Mensaje():
     def __init__(self, total, positivos, negativos, neutros):
@@ -13,6 +14,7 @@ class Mensaje():
         self.neutros = neutros
 
 class Servicio():
-    def __init__(self, nombre, mensajes):
+    def __init__(self, nombre):
         self.nombre = nombre
-        self.mensajes = mensajes
+        self.alias = []
+        self.mensajes = []

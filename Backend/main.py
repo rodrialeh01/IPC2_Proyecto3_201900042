@@ -17,7 +17,6 @@ data = Analizador()
 
 @app.route('/datos', methods=['POST'])
 def ProcesarArchivo():
-    
     try:
         print(request.data)
         archivo = request.data.decode('utf-8')
@@ -30,7 +29,6 @@ def ProcesarArchivo():
             'message':'Hubo un error al procesar el archivo'
         })
     
-    #print(request.data)
 
 #LLAMANDO LA EJECUCION DE LA API EN EL MAIN
 if __name__ == "__main__":
