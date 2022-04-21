@@ -64,6 +64,10 @@ class Analizador():
                     print('Mensaje: ')
                     texto = mensaje.text.lstrip().rstrip()
                     self.AnalizarMensaje(texto, nombres)
+                    print('____________________________________')
+
+        self.MostrarLista()
+        self.MostrarporFecha()
 
     def AnalizarMensaje(self, mensaje, nombres):
         mensaje = mensaje.lower()
@@ -77,6 +81,7 @@ class Analizador():
         palabras = mensaje.split()
         contador = 0
         mensaje = ''
+        date = ''
         while(contador < len(palabras)):
             #VERIFICAR LUGAR Y FECHA
             if palabras[contador] == 'lugar' and palabras[contador+1] == 'y' and palabras[contador+2] == 'fecha:':
@@ -84,18 +89,22 @@ class Analizador():
                 fecha = re.compile(r"\d\d\/\d\d\/\d\d\d\d")
                 if re.match(fecha,palabras[contador]).group() == palabras[contador]:
                     print('Fecha: '+ str(re.match(fecha,palabras[contador]).group()))
+                    date = str(re.match(fecha,palabras[contador]).group())
                     hora = re.compile(r"(([01][0-9]|2[0-3])\:[0-5][0-9])")
                     if re.match(hora,palabras[contador+1]).group() == palabras[contador+1]:
                         print('Hora:' + str(re.match(hora,palabras[contador+1]).group()))
+                        self.AgregarFecha(date)
                         contador+=1
             elif palabras[contador] == 'lugar' and palabras[contador+1] == 'y' and palabras[contador+2] == 'fecha' and palabras[contador+3] == ':':
                 contador += 5
                 fecha = re.compile(r"\d\d\/\d\d\/\d\d\d\d")
                 if re.match(fecha,palabras[contador]).group() == palabras[contador]:
                     print('Fecha: '+ str(re.match(fecha,palabras[contador]).group()))
+                    date = str(re.match(fecha,palabras[contador]).group())
                     hora = re.compile(r"(([01][0-9]|2[0-3])\:[0-5][0-9])")
                     if re.match(hora,palabras[contador+1]).group() == palabras[contador+1]:
                         print('Hora:' + str(re.match(hora,palabras[contador+1]).group()))
+                        self.AgregarFecha(date)
                         contador+=1
 
             #VERIFICAR USUARIO
@@ -125,26 +134,13 @@ class Analizador():
             #LEERA EL MENSAJE
             else:
                 mensaje += palabras[contador] + ' '
+                for i in range(len(self.EmpresasAnalisis)):
+                    if palabras[contador] == self.EmpresasAnalisis[i] or palabras[contador] == (self.EmpresasAnalisis[i] + ','):
+                        self.AgregarEmpresa(date,nombres[i])
+
             contador += 1
         
         print(mensaje)
-        '''
-        print('**************************************************************************')
-        fechas = re.findall(r"(\d\d\/\d\d\/\d\d\d\d\ ([01][0-9]|2[0-3]):[0-5][0-9])",mensaje)
-        print(fechas[0][0])
-        fecha = re.findall(r"\d\d\/\d\d\/\d\d\d\d", fechas[0][0])
-        self.AgregarFecha(fecha)
-        print(fecha)
-        
-        for i in range(len(self.EmpresasAnalisis)):
-            empresadetected =re.findall(self.EmpresasAnalisis[i], mensaje)
-            print(empresadetected)
-            if len(empresadetected)!= 0:
-                print(nombres[i])
-                self.AgregarEmpresa(fecha[0],nombres[i])
-
-        self.MostrarLista()
-        '''
 
     def AgregarFecha(self,fecha):
         if len(self.Fechas) == 0:
@@ -182,3 +178,12 @@ class Analizador():
             print('Fecha: ' + str(self.Empresas[i].fecha))
             print('Nombre de la Empresa: ' + str(self.Empresas[i].nombre))
             print('Cantidad de Mensajes: ' + str(self.Empresas[i].cantidad))
+
+    def MostrarporFecha(self):
+        print('.....................................................')
+        for i in range(len(self.Fechas)):
+            print('Fecha: ' + str(self.Fechas[i]))
+            for j in range(len(self.Empresas)):
+                if self.Fechas[i] == self.Empresas[j].fecha:
+                    print('Empresa: ' + str(self.Empresas[j].nombre))
+                    print('Cantidad: ' + str(self.Empresas[j].cantidad))
