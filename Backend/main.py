@@ -17,17 +17,17 @@ data = Analizador()
 
 @app.route('/datos', methods=['POST'])
 def ProcesarArchivo():
-    try:
+    #try:
         print(request.data)
         archivo = request.data.decode('utf-8')
         data.analizarData(archivo)
         return jsonify({
             'message':'Archivo procesado correctamente'
         })
-    except:
-        return jsonify({
-            'message':'Hubo un error al procesar el archivo'
-        })
+    #except:
+        #return jsonify({
+        #    'message':'Hubo un error al procesar el archivo'
+        #})
     
 
 #LLAMANDO LA EJECUCION DE LA API EN EL MAIN

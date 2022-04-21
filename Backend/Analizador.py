@@ -74,7 +74,61 @@ class Analizador():
         mensaje = mensaje.replace('ú','u')
         mensaje = mensaje.replace('\n', ' ')
         mensaje = mensaje.replace('\t', ' ')
+        palabras = mensaje.split()
+        contador = 0
+        mensaje = ''
+        while(contador < len(palabras)):
+            #VERIFICAR LUGAR Y FECHA
+            if palabras[contador] == 'lugar' and palabras[contador+1] == 'y' and palabras[contador+2] == 'fecha:':
+                contador += 4
+                fecha = re.compile(r"\d\d\/\d\d\/\d\d\d\d")
+                if re.match(fecha,palabras[contador]).group() == palabras[contador]:
+                    print('Fecha: '+ str(re.match(fecha,palabras[contador]).group()))
+                    hora = re.compile(r"(([01][0-9]|2[0-3])\:[0-5][0-9])")
+                    if re.match(hora,palabras[contador+1]).group() == palabras[contador+1]:
+                        print('Hora:' + str(re.match(hora,palabras[contador+1]).group()))
+                        contador+=1
+            elif palabras[contador] == 'lugar' and palabras[contador+1] == 'y' and palabras[contador+2] == 'fecha' and palabras[contador+3] == ':':
+                contador += 5
+                fecha = re.compile(r"\d\d\/\d\d\/\d\d\d\d")
+                if re.match(fecha,palabras[contador]).group() == palabras[contador]:
+                    print('Fecha: '+ str(re.match(fecha,palabras[contador]).group()))
+                    hora = re.compile(r"(([01][0-9]|2[0-3])\:[0-5][0-9])")
+                    if re.match(hora,palabras[contador+1]).group() == palabras[contador+1]:
+                        print('Hora:' + str(re.match(hora,palabras[contador+1]).group()))
+                        contador+=1
+
+            #VERIFICAR USUARIO
+            elif palabras[contador] == 'usuario:':
+                contador +=1
+                usuario = re.compile("([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*)|([a-zA-Z0-9.!#$%&'\*\+/=?^_`{|}~-]+)")
+                if re.match(usuario,palabras[contador]).group() == palabras[contador]:
+                    print('Usuario: ' + str(re.match(usuario,palabras[contador]).group()))
+            elif palabras[contador] == 'usuario' and palabras[contador+1] == ':':
+                contador +=2
+                usuario = re.compile("([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*)|([a-zA-Z0-9.!#$%&'\*\+/=?^_`{|}~-]+)")
+                if re.match(usuario,palabras[contador]).group() == palabras[contador]:
+                    print('Usuario: ' + str(re.match(usuario,palabras[contador]).group()))
+
+            #VERIFICAR RED SOCIAL
+            elif palabras[contador] == 'red' and palabras[contador+1] == 'social:':
+                contador += 2
+                redsocial = re.compile("[a-zA-Z0-9.!#$%&'\*\+/=?^_`{|}~-]+")
+                if re.match(redsocial,palabras[contador]).group() == palabras[contador]:
+                    print('Red Social: ' + str(re.match(redsocial,palabras[contador]).group()))
+            elif palabras[contador] == 'red' and palabras[contador+1] == 'social' and palabras[contador+2]:
+                contador += 3
+                redsocial = re.compile("[a-zA-Z0-9.!#$%&'\*\+/=?^_`{|}~-]+")
+                if re.match(redsocial,palabras[contador]).group() == palabras[contador]:
+                    print('Red Social: ' + str(re.match(redsocial,palabras[contador]).group()))
+
+            #LEERA EL MENSAJE
+            else:
+                mensaje += palabras[contador] + ' '
+            contador += 1
+        
         print(mensaje)
+        '''
         print('**************************************************************************')
         fechas = re.findall(r"(\d\d\/\d\d\/\d\d\d\d\ ([01][0-9]|2[0-3]):[0-5][0-9])",mensaje)
         print(fechas[0][0])
@@ -90,7 +144,7 @@ class Analizador():
                 self.AgregarEmpresa(fecha[0],nombres[i])
 
         self.MostrarLista()
-        
+        '''
 
     def AgregarFecha(self,fecha):
         if len(self.Fechas) == 0:
