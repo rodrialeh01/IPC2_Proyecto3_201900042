@@ -12,6 +12,11 @@ class Analizador():
     def analizarData(self, contenido):
         print(contenido)
         raiz = ET.XML(contenido)
+        self.palabraspositivas = []
+        self.palabrasnegativas = []
+        self.Fechas = []
+        self.Empresas = []
+        self.EmpresasAnalisis = []
         nombres = []
         for element in raiz:
             if element.tag == "diccionario":
@@ -82,6 +87,11 @@ class Analizador():
         contador = 0
         mensaje = ''
         date = ''
+        empresa = ''
+        positivo = 0
+        negativo = 0
+        for i in range(len(palabras)):
+            palabras[i] = palabras[i].replace(' ', '')
         while(contador < len(palabras)):
             #VERIFICAR LUGAR Y FECHA
             if palabras[contador] == 'lugar' and palabras[contador+1] == 'y' and palabras[contador+2] == 'fecha:':
@@ -135,10 +145,26 @@ class Analizador():
             else:
                 mensaje += palabras[contador] + ' '
                 for i in range(len(self.EmpresasAnalisis)):
-                    if palabras[contador] == self.EmpresasAnalisis[i] or palabras[contador] == (self.EmpresasAnalisis[i] + ','):
-                        self.AgregarEmpresa(date,nombres[i])
+                    if palabras[contador] == self.EmpresasAnalisis[i] or palabras[contador] == (self.EmpresasAnalisis[i] + ',') or palabras[contador] == (self.EmpresasAnalisis[i] + '.'):
+                        empresa = nombres[i]
+                        self.AgregarEmpresa(date,empresa)
+                
+                for j in range(len(self.palabraspositivas)):
+                    if palabras[contador] == self.palabraspositivas[j] or palabras[contador] == (self.palabraspositivas[j] + ',') or palabras[contador] == (self.palabraspositivas[j] + '.'):
+                        positivo += 1
+                for j in range(len(self.palabrasnegativas)):
+                    if palabras[contador] == self.palabrasnegativas[j] or palabras[contador] == (self.palabrasnegativas[j] + ',') or palabras[contador] == (self.palabrasnegativas[j] + '.'):
+                        negativo += 1
 
             contador += 1
+        print('P: ' + str(positivo))
+        print('N: ' + str(negativo))
+        if positivo == negativo:
+            self.retornarEmpresa(date,empresa).neutros += 1
+        elif positivo > negativo:
+            self.retornarEmpresa(date,empresa).positivos += 1
+        elif negativo > positivo:
+            self.retornarEmpresa(date,empresa).negativos += 1
         
         print(mensaje)
 
@@ -178,12 +204,24 @@ class Analizador():
             print('Fecha: ' + str(self.Empresas[i].fecha))
             print('Nombre de la Empresa: ' + str(self.Empresas[i].nombre))
             print('Cantidad de Mensajes: ' + str(self.Empresas[i].cantidad))
+            print('Positivos: ' + str(self.Empresas[i].positivos))
+            print('Negativos: ' + str(self.Empresas[i].negativos))
+            print('Neutro: ' + str(self.Empresas[i].neutros))
 
     def MostrarporFecha(self):
         print('.....................................................')
         for i in range(len(self.Fechas)):
             print('Fecha: ' + str(self.Fechas[i]))
+            cantidadp = 0
+            cantidadn = 0
+            cantidadne = 0
             for j in range(len(self.Empresas)):
                 if self.Fechas[i] == self.Empresas[j].fecha:
                     print('Empresa: ' + str(self.Empresas[j].nombre))
                     print('Cantidad: ' + str(self.Empresas[j].cantidad))
+                    cantidadp += self.Empresas[j].positivos
+                    cantidadn += self.Empresas[j].negativos
+                    cantidadne += self.Empresas[j].neutros
+            print('Cantidad total de positivos en este dia: ' + str(cantidadp))
+            print('Cantidad total de negativos en este dia: ' + str(cantidadn))
+            print('Cantidad total de neutros en este dia: ' + str(cantidadne))

@@ -3,6 +3,9 @@ class Empresa():
         self.fecha = fecha
         self.nombre = nombre
         self.cantidad = cantidad
+        self.positivos = 0
+        self.negativos = 0
+        self.neutros = 0
         self.mensajes = []
         self.servicios = []
 
