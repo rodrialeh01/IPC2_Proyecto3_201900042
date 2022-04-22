@@ -16,7 +16,7 @@ def index():
 data = Analizador()
 
 @app.route('/datos', methods=['POST'])
-def ProcesarArchivo():
+def ProcesarXML():
     #try:
         print(request.data)
         archivo = request.data.decode('utf-8')

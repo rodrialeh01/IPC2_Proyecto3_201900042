@@ -1,6 +1,10 @@
 import xml.etree.ElementTree as ET
 import re
 from clases import Empresa,Servicio
+class Serviciotemp():
+    def __init__(self, nombre):
+        self.nombre = nombre
+        self.alias = []
 class Analizador():
     def __init__(self):
         self.palabraspositivas = []
@@ -64,8 +68,21 @@ class Analizador():
                                         print('     =================SERVICIO==================')
                                         print('Nombre: ' + str(empresa.attrib.get('nombre')))
                                         nombre = empresa.attrib.get('nombre')
+                                        nombre = nombre.lower()
+                                        nombre = nombre.replace('á','a')
+                                        nombre = nombre.replace('é','e')
+                                        nombre = nombre.replace('í','i')
+                                        nombre = nombre.replace('ó','o')
+                                        nombre = nombre.replace('ú','u')
+                                        nombre = nombre.replace('\n', ' ')
+                                        nombre = nombre.replace('\t', ' ')
+                                        a = []
                                         for alias in empresa:
                                             print('Alias: ' + str(alias.text))
+                                            a.append(alias.text)
+                                        nuevo = Serviciotemp(nombre)
+                                        nuevo.alias = a 
+                                        self.Servicios.append(nuevo)
             elif element.tag == "lista_mensajes":
                 print('=====================LISTA DE MENSAJES=====================')
                 for mensaje in element:
@@ -95,6 +112,7 @@ class Analizador():
         negativo = 0
         for i in range(len(palabras)):
             palabras[i] = palabras[i].replace(' ', '')
+            print(palabras[i])
         while(contador < len(palabras)):
             #VERIFICAR LUGAR Y FECHA
             if palabras[contador] == 'lugar' and palabras[contador+1] == 'y' and palabras[contador+2] == 'fecha:':
@@ -147,18 +165,19 @@ class Analizador():
             #LEERA EL MENSAJE
             else:
                 mensaje += palabras[contador] + ' '
+                #LEE LA EMPRESA
                 for i in range(len(self.EmpresasAnalisis)):
                     if palabras[contador] == self.EmpresasAnalisis[i] or palabras[contador] == (self.EmpresasAnalisis[i] + ',') or palabras[contador] == (self.EmpresasAnalisis[i] + '.'):
                         empresa = nombres[i]
                         self.AgregarEmpresa(date,empresa)
-                
+                #LEE LAS PALABRAS POSITIVAS
                 for j in range(len(self.palabraspositivas)):
                     if palabras[contador] == self.palabraspositivas[j] or palabras[contador] == (self.palabraspositivas[j] + ',') or palabras[contador] == (self.palabraspositivas[j] + '.'):
                         positivo += 1
+                #LEE LAS PALABRAS NEGATIVAS
                 for j in range(len(self.palabrasnegativas)):
                     if palabras[contador] == self.palabrasnegativas[j] or palabras[contador] == (self.palabrasnegativas[j] + ',') or palabras[contador] == (self.palabrasnegativas[j] + '.'):
                         negativo += 1
-
             contador += 1
         print('P: ' + str(positivo))
         print('N: ' + str(negativo))
@@ -168,7 +187,6 @@ class Analizador():
             self.retornarEmpresa(date,empresa).positivos += 1
         elif negativo > positivo:
             self.retornarEmpresa(date,empresa).negativos += 1
-        
         print(mensaje)
 
     def AgregarFecha(self,fecha):
@@ -259,3 +277,16 @@ class Analizador():
             total = cantidadp + cantidadn + cantidadne
             print('Cantidad total de mensajes en este dia: ' + str(total))
             print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+
+    def mostrarServicios(self):
+        print('/////////////////////////////////////////////////')
+        for i in range(len(self.Empresas)):
+            print('Empresa: ' + self.Empresas[i].nombre)
+            print('-------------------SERVICIOS--------------')
+            for j in range(len(self.Empresas[i].servicios)):
+                print('Fecha: ' + str(self.Empresas[i].servicios[j].fecha))
+                print('Nombre: ' + str(self.Empresas[i].servicios[j].nombre))
+                print('Cantidad: ' + str(self.Empresas[i].servicios[j].cantidad))
+                print('Positivos: ' + str(self.Empresas[i].servicios[j].positivos))
+                print('Negativos: ' + str(self.Empresas[i].servicios[j].negativos))
+                print('Neutros: ' + str(self.Empresas[i].servicios[j].neutros))
