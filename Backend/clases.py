@@ -6,18 +6,14 @@ class Empresa():
         self.positivos = 0
         self.negativos = 0
         self.neutros = 0
-        self.mensajes = []
         self.servicios = []
 
-class Mensaje():
-    def __init__(self, total, positivos, negativos, neutros):
-        self.total = total
-        self.positivos = positivos
-        self.negativos = negativos
-        self.neutros = neutros
-
 class Servicio():
-    def __init__(self, nombre):
+    def __init__(self, nombre,fecha, cantidad):
         self.nombre = nombre
+        self.fecha = fecha
+        self.cantidad = cantidad
         self.alias = []
-        self.mensajes = []
+        self.positivos = 0
+        self.negativos = 0
+        self.neutros = 0

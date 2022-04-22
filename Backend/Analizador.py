@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 import re
-from clases import Empresa,Mensaje,Servicio
+from clases import Empresa,Servicio
 class Analizador():
     def __init__(self):
         self.palabraspositivas = []
@@ -8,6 +8,7 @@ class Analizador():
         self.Fechas = []
         self.Empresas = []
         self.EmpresasAnalisis = []
+        self.Servicios = []
         
     def analizarData(self, contenido):
         print(contenido)
@@ -17,6 +18,7 @@ class Analizador():
         self.Fechas = []
         self.Empresas = []
         self.EmpresasAnalisis = []
+        self.Servicios = []
         nombres = []
         for element in raiz:
             if element.tag == "diccionario":
@@ -61,6 +63,7 @@ class Analizador():
                                     elif empresa.tag == "servicio":
                                         print('     =================SERVICIO==================')
                                         print('Nombre: ' + str(empresa.attrib.get('nombre')))
+                                        nombre = empresa.attrib.get('nombre')
                                         for alias in empresa:
                                             print('Alias: ' + str(alias.text))
             elif element.tag == "lista_mensajes":
@@ -198,6 +201,34 @@ class Analizador():
             if empresa == self.Empresas[i].nombre and fecha == self.Empresas[i].fecha:
                 return self.Empresas[i]
 
+    def AgregarServicio(self,fecha,empresa, servicio):
+        nuevo = Servicio(servicio,fecha,1)
+        for i in range(len(self.Empresas)):
+            if self.Empresas[i].nombre == empresa:
+                if len(self.Empresas[i].servicios) == 0:
+                    self.Empresas[i].servicios.append(nuevo)
+                else:
+                    if self.VerificarServicio(empresa,fecha,servicio) == True:
+                        self.retornarServicio(empresa,fecha,servicio).cantidad += 1
+                    else:
+                        self.Empresas[i].servicios.append(nuevo)
+
+    def VerificarServicio(self,empresa,fecha, servicio):
+        encontrado = False
+        for i in range(len(self.Empresas)):
+            if self.Empresas[i].nombre == empresa:
+                for j in range(len(self.Empresas[i].servicios)):
+                    if self.Empresas[i].servicios[j].fecha == fecha and self.Empresas[i].servicios[j].nombre == servicio:
+                        encontrado = True
+        return encontrado
+
+    def retornarServicio(self,empresa,fecha,servicio):
+        for i in range(len(self.Empresas)):
+            if self.Empresas[i].nombre == empresa:
+                for j in range(len(self.Empresas[i].servicios)):
+                    if self.Empresas[i].servicios[j].fecha == fecha and self.Empresas[i].servicios[j].nombre == servicio:
+                        return self.Empresas[i].servicios[j]
+
     def MostrarLista(self):
         print('------------------EMPRESAS----------------')
         for i in range(len(self.Empresas)):
@@ -225,3 +256,6 @@ class Analizador():
             print('Cantidad total de positivos en este dia: ' + str(cantidadp))
             print('Cantidad total de negativos en este dia: ' + str(cantidadn))
             print('Cantidad total de neutros en este dia: ' + str(cantidadne))
+            total = cantidadp + cantidadn + cantidadne
+            print('Cantidad total de mensajes en este dia: ' + str(total))
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
