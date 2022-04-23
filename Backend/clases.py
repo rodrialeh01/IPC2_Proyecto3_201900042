@@ -13,7 +13,6 @@ class Servicio():
         self.nombre = nombre
         self.fecha = fecha
         self.cantidad = cantidad
-        self.alias = []
         self.positivos = 0
         self.negativos = 0
         self.neutros = 0
