@@ -3,7 +3,8 @@ import xml.etree.ElementTree as ET
 import re
 from clases import Empresa,Servicio
 class Serviciotemp():
-    def __init__(self, nombre):
+    def __init__(self,empresa, nombre):
+        self.empresa = empresa
         self.nombre = nombre
         self.alias = []
 class Analizador():
@@ -25,6 +26,7 @@ class Analizador():
         self.EmpresasAnalisis = []
         self.Servicios = []
         nombres = []
+        empre =''
         for element in raiz:
             if element.tag == "diccionario":
                 print('=====================DICCIONARIO=====================')
@@ -62,8 +64,16 @@ class Analizador():
                                     if empresa.tag == "nombre":
                                         print('Nombre: ' + str(empresa.text))
                                         nombre = empresa.text.lstrip().rstrip()
+                                        empre = nombre
                                         nombres.append(nombre)
                                         empresan = empresa.text.lower().lstrip().rstrip()
+                                        empresan = empresan.replace('á','a')
+                                        empresan = empresan.replace('é','e')
+                                        empresan = empresan.replace('í','i')
+                                        empresan = empresan.replace('ó','o')
+                                        empresan = empresan.replace('ú','u')
+                                        empresan = empresan.replace('\n', ' ')
+                                        empresan = empresan.replace('\t', ' ')
                                         self.EmpresasAnalisis.append(empresan)
                                     elif empresa.tag == "servicio":
                                         print('     =================SERVICIO==================')
@@ -90,7 +100,8 @@ class Analizador():
                                             nombre2 = nombre2.replace('\n', ' ')
                                             nombre2 = nombre2.replace('\t', ' ')
                                             a.append(nombre2)
-                                        nuevo = Serviciotemp(nombre)
+                                        print(empre)
+                                        nuevo = Serviciotemp(empre,nombre)
                                         nuevo.alias = a 
                                         self.Servicios.append(nuevo)
             elif element.tag == "lista_mensajes":
@@ -204,6 +215,18 @@ class Analizador():
                     if palabras[contador] == self.palabrasnegativas[j]:
                         negativo += 1
             contador += 1
+
+        for e in empresasrep:
+            self.AgregarEmpresa(date,e)
+            if positivo == negativo:
+                self.retornarEmpresa(date,e).neutros += 1
+                print('NEU: ' + str(self.retornarEmpresa(date,e).neutros))
+            elif positivo > negativo:
+                self.retornarEmpresa(date,e).positivos += 1
+                print('POS: ' + str(self.retornarEmpresa(date,e).positivos))
+            elif negativo > positivo:
+                self.retornarEmpresa(date,e).negativos += 1
+                print('NEG: ' + str(self.retornarEmpresa(date,e).negativos))
         
         #VUELVE A ANALIZAR EL MENSAJE PARA CORRESPONDER LOS SERVICIOS
         pal = mensaje.split() 
@@ -239,28 +262,19 @@ class Analizador():
                 j+=1
             c+=1
         print(serviciosrep)
-        for e in empresasrep:
-            self.AgregarEmpresa(date,e)
-            if positivo == negativo:
-                self.retornarEmpresa(date,e).neutros += 1
-                print('NEU: ' + str(self.retornarEmpresa(date,e).neutros))
-            elif positivo > negativo:
-                self.retornarEmpresa(date,e).positivos += 1
-                print('POS: ' + str(self.retornarEmpresa(date,e).positivos))
-            elif negativo > positivo:
-                self.retornarEmpresa(date,e).negativos += 1
-                print('NEG: ' + str(self.retornarEmpresa(date,e).negativos))
-        #AGREGA LAS ESTEDISTICAS DE LOS MENSAJES
+        
+        #AGREGA LAS ESTADISTICAS DE LOS SERVICIOS EN EL MENSAJE
         for s in serviciosrep:
             for e in empresasrep:
-                self.AgregarServicio(date,e,s)
-                print(e)
-                if positivo == negativo:
-                    self.retornarServicio(e,date,s).neutros += 1
-                elif positivo > negativo:
-                    self.retornarServicio(e,date,s).positivos +=1
-                elif negativo > positivo:
-                    self.retornarServicio(e,date,s).negativos += 1
+                for i in range(len(self.Servicios)):
+                    if self.retornarEmpresa(date,e).nombre == self.Servicios[i].empresa and s == self.Servicios[i].nombre:
+                        self.AgregarServicio(date,e,s)
+                        if positivo == negativo:
+                            self.retornarServicio(e,date,s).neutros += 1
+                        elif positivo > negativo:
+                            self.retornarServicio(e,date,s).positivos +=1
+                        elif negativo > positivo:
+                            self.retornarServicio(e,date,s).negativos += 1
         print(mensaje)
 
     def AgregarFecha(self,fecha):
