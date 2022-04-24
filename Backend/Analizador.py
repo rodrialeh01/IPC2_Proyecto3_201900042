@@ -1,4 +1,3 @@
-from tkinter import E
 import xml.etree.ElementTree as ET
 import re
 from clases import Empresa,Servicio
@@ -219,14 +218,17 @@ class Analizador():
         for e in empresasrep:
             self.AgregarEmpresa(date,e)
             if positivo == negativo:
-                self.retornarEmpresa(date,e).neutros += 1
+                if self.retornarEmpresa(date,e) != None:
+                    self.retornarEmpresa(date,e).neutros += 1
                 print('NEU: ' + str(self.retornarEmpresa(date,e).neutros))
             elif positivo > negativo:
-                self.retornarEmpresa(date,e).positivos += 1
-                print('POS: ' + str(self.retornarEmpresa(date,e).positivos))
+                if self.retornarEmpresa(date,e) != None:
+                    self.retornarEmpresa(date,e).positivos += 1
+                    print('POS: ' + str(self.retornarEmpresa(date,e).positivos))
             elif negativo > positivo:
-                self.retornarEmpresa(date,e).negativos += 1
-                print('NEG: ' + str(self.retornarEmpresa(date,e).negativos))
+                if self.retornarEmpresa(date,e) != None:
+                    self.retornarEmpresa(date,e).negativos += 1
+                    print('NEG: ' + str(self.retornarEmpresa(date,e).negativos))
         
         #VUELVE A ANALIZAR EL MENSAJE PARA CORRESPONDER LOS SERVICIOS
         pal = mensaje.split() 
@@ -267,14 +269,16 @@ class Analizador():
         for s in serviciosrep:
             for e in empresasrep:
                 for i in range(len(self.Servicios)):
-                    if self.retornarEmpresa(date,e).nombre == self.Servicios[i].empresa and s == self.Servicios[i].nombre:
-                        self.AgregarServicio(date,e,s)
-                        if positivo == negativo:
-                            self.retornarServicio(e,date,s).neutros += 1
-                        elif positivo > negativo:
-                            self.retornarServicio(e,date,s).positivos +=1
-                        elif negativo > positivo:
-                            self.retornarServicio(e,date,s).negativos += 1
+                    if self.retornarEmpresa(date,e) != None:
+                        if self.retornarEmpresa(date,e).nombre == self.Servicios[i].empresa and s == self.Servicios[i].nombre:
+                            self.AgregarServicio(date,e,s)
+                            if self.retornarServicio(e,date,s)!= None:
+                                if positivo == negativo:
+                                    self.retornarServicio(e,date,s).neutros += 1
+                                elif positivo > negativo:
+                                    self.retornarServicio(e,date,s).positivos +=1
+                                elif negativo > positivo:
+                                    self.retornarServicio(e,date,s).negativos += 1
         print(mensaje)
 
     def AgregarFecha(self,fecha):
@@ -440,6 +444,12 @@ class Analizador():
 </lista_respuestas>'''
 
         print(texto)
+        self.crearArchivo(texto)
+
+    def crearArchivo(self, texto):
+        archivo=open("Backend\Database\Respuestas.xml", 'w', encoding='utf8')
+        archivo.write(texto)
+        archivo.close()
 
     def mostrarServicios(self):
         print('/////////////////////////////////////////////////')
