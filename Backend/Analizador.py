@@ -1,3 +1,4 @@
+from tkinter import E
 import xml.etree.ElementTree as ET
 import re
 from clases import Empresa,Servicio
@@ -109,7 +110,7 @@ class Analizador():
                 print('Alias: ' + str(self.Servicios[i].alias[j]))
 
         self.MostrarporFecha()
-        #self.MostrarLista()
+        self.MostrarXML()
 
     def AnalizarMensaje(self, mensaje, nombres):
         mensaje = mensaje.lower()
@@ -124,9 +125,9 @@ class Analizador():
         contador = 0
         mensaje = ''
         date = ''
-        empresa = ''
         positivo = 0
         negativo = 0
+        empresasrep ={}
         for i in range(len(palabras)):
             palabras[i] = palabras[i].replace(' ', '')
             print(palabras[i])
@@ -182,30 +183,42 @@ class Analizador():
             #LEERA EL MENSAJE
             else:
                 mensaje += palabras[contador] + ' '
+                palabras[contador] = palabras[contador].replace(',', '')
+                palabras[contador] = palabras[contador].replace('.', '')
+                palabras[contador] = palabras[contador].replace('!', '')
+                palabras[contador] = palabras[contador].replace('?', '')
                 #LEE LA EMPRESA
                 for i in range(len(self.EmpresasAnalisis)):
-                    if palabras[contador] == self.EmpresasAnalisis[i] or palabras[contador] == (self.EmpresasAnalisis[i] + ',') or palabras[contador] == (self.EmpresasAnalisis[i] + '.'):
+                    if palabras[contador] == self.EmpresasAnalisis[i]:
                         empresa = nombres[i]
-                        self.AgregarEmpresa(date,empresa)
+                        if empresa in empresasrep:
+                            empresasrep[empresa] +=1
+                        else:
+                            empresasrep[empresa] = 1
                 #LEE LAS PALABRAS POSITIVAS
                 for j in range(len(self.palabraspositivas)):
-                    if palabras[contador] == self.palabraspositivas[j] or palabras[contador] == (self.palabraspositivas[j] + ',') or palabras[contador] == (self.palabraspositivas[j] + '.'):
+                    if palabras[contador] == self.palabraspositivas[j]:
                         positivo += 1
                 #LEE LAS PALABRAS NEGATIVAS
                 for j in range(len(self.palabrasnegativas)):
-                    if palabras[contador] == self.palabrasnegativas[j] or palabras[contador] == (self.palabrasnegativas[j] + ',') or palabras[contador] == (self.palabrasnegativas[j] + '.'):
+                    if palabras[contador] == self.palabrasnegativas[j]:
                         negativo += 1
             contador += 1
         
+        #VUELVE A ANALIZAR EL MENSAJE PARA CORRESPONDER LOS SERVICIOS
         pal = mensaje.split() 
         c = 0
         servicio = ''
         serviciosrep = {}
         while(c < len(pal)):
+            pal[c] = pal[c].replace(',', '')
+            pal[c] = pal[c].replace('.', '')
+            pal[c] = pal[c].replace('!', '')
+            pal[c] = pal[c].replace('?', '')
             j = 0
             while(j <len(self.Servicios)):
                 if len(self.Servicios[j].alias) == 0:
-                    if pal[c] == self.Servicios[j].nombre or pal[c] == (self.Servicios[j].nombre + ',') or pal[c] == (self.Servicios[j].nombre + '.'):
+                    if pal[c] == self.Servicios[j].nombre:
                         servicio = self.Servicios[j].nombre
                         print(servicio)
                         if servicio in serviciosrep:
@@ -215,7 +228,7 @@ class Analizador():
                 else:
                     k = 0
                     while(k <len(self.Servicios[j].alias)):
-                        if pal[c] == self.Servicios[j].nombre or pal[c] == (self.Servicios[j].nombre + ',') or pal[c] == (self.Servicios[j].nombre + '.') or pal[c] == self.Servicios[j].alias[k] or pal[c] == (self.Servicios[j].alias[k] + ',') or pal[c] == (self.Servicios[j].alias[k] + '.'):
+                        if pal[c] == self.Servicios[j].nombre or pal[c] == self.Servicios[j].alias[k]:
                             servicio = self.Servicios[j].nombre
                             print(servicio)
                             if servicio in serviciosrep:
@@ -226,20 +239,28 @@ class Analizador():
                 j+=1
             c+=1
         print(serviciosrep)
-        for s in serviciosrep:
-            self.AgregarServicio(date,empresa,s)
+        for e in empresasrep:
+            self.AgregarEmpresa(date,e)
             if positivo == negativo:
-                self.retornarServicio(empresa,date,s).neutros += 1
+                self.retornarEmpresa(date,e).neutros += 1
+                print('NEU: ' + str(self.retornarEmpresa(date,e).neutros))
             elif positivo > negativo:
-                self.retornarServicio(empresa,date,s).positivos +=1
+                self.retornarEmpresa(date,e).positivos += 1
+                print('POS: ' + str(self.retornarEmpresa(date,e).positivos))
             elif negativo > positivo:
-                self.retornarServicio(empresa,date,s).negativos += 1
-        if positivo == negativo:
-            self.retornarEmpresa(date,empresa).neutros += 1
-        elif positivo > negativo:
-            self.retornarEmpresa(date,empresa).positivos += 1
-        elif negativo > positivo:
-            self.retornarEmpresa(date,empresa).negativos += 1
+                self.retornarEmpresa(date,e).negativos += 1
+                print('NEG: ' + str(self.retornarEmpresa(date,e).negativos))
+        #AGREGA LAS ESTEDISTICAS DE LOS MENSAJES
+        for s in serviciosrep:
+            for e in empresasrep:
+                self.AgregarServicio(date,e,s)
+                print(e)
+                if positivo == negativo:
+                    self.retornarServicio(e,date,s).neutros += 1
+                elif positivo > negativo:
+                    self.retornarServicio(e,date,s).positivos +=1
+                elif negativo > positivo:
+                    self.retornarServicio(e,date,s).negativos += 1
         print(mensaje)
 
     def AgregarFecha(self,fecha):
@@ -314,7 +335,7 @@ class Analizador():
     def MostrarporFecha(self):
         print('.....................................................')
         for i in range(len(self.Fechas)):
-            print('Fecha: ' + str(self.Fechas[i]))
+            print('FECHA: ' + str(self.Fechas[i]))
             cantidadp = 0
             cantidadn = 0
             cantidadne = 0
@@ -324,29 +345,87 @@ class Analizador():
                     cantidadn += self.Empresas[j].negativos
                     cantidadne += self.Empresas[j].neutros
             total = cantidadp + cantidadn + cantidadne
-            print('Total: ' + str(total))
-            print('Positivos: ' + str(cantidadp))
-            print('Negativos: ' + str(cantidadn))
-            print('Neutros: ' + str(cantidadne))
+            print('Cantidad total de mensajes recibidos: ' + str(total))
+            print('Cantidad total de mensajes positivos: ' + str(cantidadp))
+            print('Cantidad total de mensajes negativos: ' + str(cantidadn))
+            print('Cantidad total de mensajes neutros: ' + str(cantidadne))
             for j in range(len(self.Empresas)):
                 if self.Fechas[i] == self.Empresas[j].fecha:
                     print('     -----------------------------------')
                     print('         Nombre: ' + str(self.Empresas[j].nombre))
                     print('         **********************')
-                    print('         Mensajes: ' + str(self.Empresas[j].cantidad))
-                    print('         Positivos: ' + str(self.Empresas[j].positivos))
-                    print('         Negativos: ' + str(self.Empresas[j].negativos))
-                    print('         Neutros: ' + str(self.Empresas[j].neutros))
+                    print('         Número total de mensajes que mencionan a Empresa: ' + str(self.Empresas[j].cantidad))
+                    print('         Mensajes positivos: ' + str(self.Empresas[j].positivos))
+                    print('         Mensajes negativos: ' + str(self.Empresas[j].negativos))
+                    print('         Mensajes neutros: ' + str(self.Empresas[j].neutros))
                     for k in range(len(self.Empresas[j].servicios)):
                         if self.Fechas[i] == self.Empresas[j].servicios[k].fecha:
                             print('             _________________________________')
                             print('                 Nombre: ' + str(self.Empresas[j].servicios[k].nombre))
                             print('                 -_-_-_-_-_-_-_-_-_-_-_-_-_')
-                            print('                 Mensajes: ' + str(self.Empresas[j].servicios[k].cantidad))
-                            print('                 Positivos: ' + str(self.Empresas[j].servicios[k].positivos))
-                            print('                 Negativos: ' + str(self.Empresas[j].servicios[k].negativos))
-                            print('                 Neutros: ' + str(self.Empresas[j].servicios[k].neutros))
+                            print('                 Número total de mensajes que mencionan al servicio: ' + str(self.Empresas[j].servicios[k].cantidad))
+                            print('                 Mensajes positivos: ' + str(self.Empresas[j].servicios[k].positivos))
+                            print('                 Mensajes negativos: ' + str(self.Empresas[j].servicios[k].negativos))
+                            print('                 Mensajes neutros: ' + str(self.Empresas[j].servicios[k].neutros))
             print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+
+    def MostrarXML(self):
+        texto = ''
+        texto += '''<?xml version="1.0"?> 
+<lista_respuestas>'''
+        for i in range(len(self.Fechas)):
+            texto+='''
+    <respuesta>
+        <fecha>''' + str(self.Fechas[i]) + '''</fecha>'''
+            cantidadp = 0
+            cantidadn = 0
+            cantidadne = 0
+            for j in range(len(self.Empresas)):
+                if self.Fechas[i] == self.Empresas[j].fecha:
+                    cantidadp += self.Empresas[j].positivos
+                    cantidadn += self.Empresas[j].negativos
+                    cantidadne += self.Empresas[j].neutros
+            total = cantidadp + cantidadn + cantidadne
+            texto +='''
+            <mensajes> 
+                <total> '''+str(total)+''' </total> 
+                <positivos> '''+str(cantidadp)+''' </positivos> 
+                <negativos> '''+str(cantidadn)+''' </negativos> 
+                <neutros> '''+str(cantidadne)+''' </neutros> 
+            </mensajes> 
+        <analisis>'''
+            for j in range(len(self.Empresas)):
+                if self.Fechas[i] == self.Empresas[j].fecha:
+                    texto+='''
+            <empresa nombre=\"'''+str(self.Empresas[j].nombre)+'''\">
+                <mensajes> 
+                    <total> '''+str(self.Empresas[j].cantidad)+''' </total> 
+                    <positivos> '''+str(self.Empresas[j].positivos)+''' </positivos> 
+                    <negativos> '''+str(self.Empresas[j].negativos)+''' </negativos> 
+                    <neutros> '''+str(self.Empresas[j].neutros)+''' </neutros> 
+                </mensajes>
+                    <servicios>'''
+                    for k in range(len(self.Empresas[j].servicios)):
+                        if self.Fechas[i] == self.Empresas[j].servicios[k].fecha:
+                            texto += '''
+                    <servicio nombre=\"''' +str(self.Empresas[j].servicios[k].nombre)+ '''\"> 
+                        <mensajes> 
+                            <total> '''+str(self.Empresas[j].servicios[k].cantidad)+''' </total> 
+                            <positivos> '''+str(self.Empresas[j].servicios[k].positivos)+''' </positivos> 
+                            <negativos> '''+str(self.Empresas[j].servicios[k].negativos)+''' </negativos> 
+                            <neutros> '''+str(self.Empresas[j].servicios[k].neutros)+''' </neutros> 
+                        </mensajes> 
+                    </servicio>'''
+                    texto +='''
+                    </servicios>
+            </empresa>'''
+            texto +='''
+        </analisis>
+    </respuesta>'''
+        texto +='''
+</lista_respuestas>'''
+
+        print(texto)
 
     def mostrarServicios(self):
         print('/////////////////////////////////////////////////')
