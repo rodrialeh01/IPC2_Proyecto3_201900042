@@ -422,14 +422,14 @@ class Analizador():
                     for k in range(len(self.Empresas[j].servicios)):
                         if self.Fechas[i] == self.Empresas[j].servicios[k].fecha:
                             texto += '''
-                    <servicio nombre=\"''' +str(self.Empresas[j].servicios[k].nombre)+ '''\"> 
-                        <mensajes> 
-                            <total> '''+str(self.Empresas[j].servicios[k].cantidad)+''' </total> 
-                            <positivos> '''+str(self.Empresas[j].servicios[k].positivos)+''' </positivos> 
-                            <negativos> '''+str(self.Empresas[j].servicios[k].negativos)+''' </negativos> 
-                            <neutros> '''+str(self.Empresas[j].servicios[k].neutros)+''' </neutros> 
-                        </mensajes> 
-                    </servicio>'''
+                        <servicio nombre=\"''' +str(self.Empresas[j].servicios[k].nombre)+ '''\"> 
+                            <mensajes> 
+                                <total> '''+str(self.Empresas[j].servicios[k].cantidad)+''' </total> 
+                                <positivos> '''+str(self.Empresas[j].servicios[k].positivos)+''' </positivos> 
+                                <negativos> '''+str(self.Empresas[j].servicios[k].negativos)+''' </negativos> 
+                                <neutros> '''+str(self.Empresas[j].servicios[k].neutros)+''' </neutros> 
+                            </mensajes> 
+                        </servicio>'''
                     texto +='''
                     </servicios>
             </empresa>'''
