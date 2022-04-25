@@ -11,9 +11,9 @@
         <analisis>
             <empresa nombre="USAC">
                 <mensajes> 
-                    <total> 2 </total> 
+                    <total> 1 </total> 
                     <positivos> 1 </positivos> 
-                    <negativos> 1 </negativos> 
+                    <negativos> 0 </negativos> 
                     <neutros> 0 </neutros> 
                 </mensajes>
                     <servicios>
@@ -25,6 +25,16 @@
                                 <neutros> 0 </neutros> 
                             </mensajes> 
                         </servicio>
+                    </servicios>
+            </empresa>
+            <empresa nombre="UVG">
+                <mensajes> 
+                    <total> 1 </total> 
+                    <positivos> 0 </positivos> 
+                    <negativos> 1 </negativos> 
+                    <neutros> 0 </neutros> 
+                </mensajes>
+                    <servicios>
                         <servicio nombre="asignacion"> 
                             <mensajes> 
                                 <total> 1 </total> 

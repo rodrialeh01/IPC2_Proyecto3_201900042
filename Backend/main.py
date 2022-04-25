@@ -22,13 +22,25 @@ def ProcesarXML():
         archivo = request.data.decode('utf-8')
         data.analizarData(archivo)
         return jsonify({
-            'message':'Archivo procesado correctamente'
+            'message':'Archivo analizado correctamente'
         })
     except:
         return jsonify({
             'message':'Hubo un error al procesar el archivo'
         })
     
+@app.route('/mensaje', methods=['POST'])
+def ProcesarXMLMensaje():
+    try:
+        mensaje = request.data.decode('utf-8')
+        data.AnalizarMensajePrueba(mensaje)
+        return jsonify({
+            'message':'Mensaje analizado correctamente'
+        })
+    except:
+        return jsonify({
+            'message':'Hubo un error al procesar el archivo'
+        })
 
 #LLAMANDO LA EJECUCION DE LA API EN EL MAIN
 if __name__ == "__main__":

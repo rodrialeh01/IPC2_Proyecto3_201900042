@@ -6,6 +6,7 @@ class Serviciotemp():
         self.empresa = empresa
         self.nombre = nombre
         self.alias = []
+
 class Analizador():
     def __init__(self):
         self.palabraspositivas = []
@@ -14,6 +15,7 @@ class Analizador():
         self.Empresas = []
         self.EmpresasAnalisis = []
         self.Servicios = []
+        self.Nombres = []
         
     def analizarData(self, contenido):
         print(contenido)
@@ -24,7 +26,7 @@ class Analizador():
         self.Empresas = []
         self.EmpresasAnalisis = []
         self.Servicios = []
-        nombres = []
+        self.Nombres = []
         empre =''
         for element in raiz:
             if element.tag == "diccionario":
@@ -64,7 +66,7 @@ class Analizador():
                                         print('Nombre: ' + str(empresa.text))
                                         nombre = empresa.text.lstrip().rstrip()
                                         empre = nombre
-                                        nombres.append(nombre)
+                                        self.Nombres.append(nombre)
                                         empresan = empresa.text.lower().lstrip().rstrip()
                                         empresan = empresan.replace('á','a')
                                         empresan = empresan.replace('é','e')
@@ -108,7 +110,7 @@ class Analizador():
                 for mensaje in element:
                     print('Mensaje: ')
                     texto = mensaje.text.lstrip().rstrip()
-                    self.AnalizarMensaje(texto, nombres)
+                    self.AnalizarMensaje(texto)
                     print('____________________________________')
 
         
@@ -122,7 +124,7 @@ class Analizador():
         self.MostrarporFecha()
         self.MostrarXML()
 
-    def AnalizarMensaje(self, mensaje, nombres):
+    def AnalizarMensaje(self, mensaje):
         mensaje = mensaje.lower()
         mensaje = mensaje.replace('á','a')
         mensaje = mensaje.replace('é','e')
@@ -200,7 +202,7 @@ class Analizador():
                 #LEE LA EMPRESA
                 for i in range(len(self.EmpresasAnalisis)):
                     if palabras[contador] == self.EmpresasAnalisis[i]:
-                        empresa = nombres[i]
+                        empresa = self.Nombres[i]
                         if empresa in empresasrep:
                             empresasrep[empresa] +=1
                         else:
@@ -464,3 +466,212 @@ class Analizador():
                 print('Positivos: ' + str(self.Empresas[i].servicios[j].positivos))
                 print('Negativos: ' + str(self.Empresas[i].servicios[j].negativos))
                 print('Neutros: ' + str(self.Empresas[i].servicios[j].neutros))
+
+    def AnalizarMensajePrueba(self, contenido):
+        raiz = ET.XML(contenido)
+        print(raiz.text)
+        print('----------------------------')
+        print(raiz.tag)
+        message = raiz.text.lstrip().rstrip().lower()
+        message = message.replace('á','a')
+        message = message.replace('é','e')
+        message = message.replace('í','i')
+        message = message.replace('ó','o')
+        message = message.replace('ú','u')
+        message = message.replace('\n', ' ')
+        message = message.replace('\t', ' ')
+        palabras = message.split()
+        print(palabras)
+        contador = 0
+        date = ''
+        red = ''
+        user = ''
+        empresasrep = {}
+        positivo = 0
+        negativo = 0
+        empresas = []
+        serviciosrep = {}
+        while(contador < len(palabras)):
+            #VERIFICAR LUGAR Y FECHA
+            if palabras[contador] == 'lugar' and palabras[contador+1] == 'y' and palabras[contador+2] == 'fecha:':
+                contador += 4
+                fecha = re.compile(r"\d\d\/\d\d\/\d\d\d\d")
+                if re.match(fecha,palabras[contador]).group() == palabras[contador]:
+                    print('Fecha: '+ str(re.match(fecha,palabras[contador]).group()))
+                    date = str(re.match(fecha,palabras[contador]).group())
+                    hora = re.compile(r"(([01][0-9]|2[0-3])\:[0-5][0-9])")
+                    if re.match(hora,palabras[contador+1]).group() == palabras[contador+1]:
+                        print('Hora:' + str(re.match(hora,palabras[contador+1]).group()))
+                        hour = str(re.match(hora,palabras[contador+1]).group())
+                        contador+=1
+            elif palabras[contador] == 'lugar' and palabras[contador+1] == 'y' and palabras[contador+2] == 'fecha' and palabras[contador+3] == ':':
+                contador += 5
+                fecha = re.compile(r"\d\d\/\d\d\/\d\d\d\d")
+                if re.match(fecha,palabras[contador]).group() == palabras[contador]:
+                    print('Fecha: '+ str(re.match(fecha,palabras[contador]).group()))
+                    date = str(re.match(fecha,palabras[contador]).group())
+                    hora = re.compile(r"(([01][0-9]|2[0-3])\:[0-5][0-9])")
+                    if re.match(hora,palabras[contador+1]).group() == palabras[contador+1]:
+                        print('Hora:' + str(re.match(hora,palabras[contador+1]).group()))
+                        hour = str(re.match(hora,palabras[contador+1]).group())
+                        contador+=1
+
+            #VERIFICAR USUARIO
+            elif palabras[contador] == 'usuario:':
+                contador +=1
+                usuario = re.compile("([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*)|([a-zA-Z0-9.!#$%&'\*\+/=?^_`{|}~-]+)")
+                if re.match(usuario,palabras[contador]).group() == palabras[contador]:
+                    print('Usuario: ' + str(re.match(usuario,palabras[contador]).group()))
+                    user = str(re.match(usuario,palabras[contador]).group())
+            elif palabras[contador] == 'usuario' and palabras[contador+1] == ':':
+                contador +=2
+                usuario = re.compile("([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*)|([a-zA-Z0-9.!#$%&'\*\+/=?^_`{|}~-]+)")
+                if re.match(usuario,palabras[contador]).group() == palabras[contador]:
+                    print('Usuario: ' + str(re.match(usuario,palabras[contador]).group()))
+                    user = str(re.match(usuario,palabras[contador]).group())
+            #VERIFICAR RED SOCIAL
+            elif palabras[contador] == 'red' and palabras[contador+1] == 'social:':
+                contador += 2
+                redsocial = re.compile("[a-zA-Z0-9.!#$%&'\*\+/=?^_`{|}~-]+")
+                if re.match(redsocial,palabras[contador]).group() == palabras[contador]:
+                    print('Red Social: ' + str(re.match(redsocial,palabras[contador]).group()))
+                    red = str(re.match(redsocial,palabras[contador]).group())
+            elif palabras[contador] == 'red' and palabras[contador+1] == 'social' and palabras[contador+2] == ':':
+                contador += 3
+                redsocial = re.compile("[a-zA-Z0-9.!#$%&'\*\+/=?^_`{|}~-]+")
+                if re.match(redsocial,palabras[contador]).group() == palabras[contador]:
+                    print('Red Social: ' + str(re.match(redsocial,palabras[contador]).group()))
+                    red = str(re.match(redsocial,palabras[contador]).group())
+
+            #LEERA EL MENSAJE
+            else:
+                message += palabras[contador] + ' '
+                palabras[contador] = palabras[contador].replace(',', '')
+                palabras[contador] = palabras[contador].replace('.', '')
+                palabras[contador] = palabras[contador].replace('!', '')
+                palabras[contador] = palabras[contador].replace('?', '')
+                #LEE LA EMPRESA
+                for i in range(len(self.EmpresasAnalisis)):
+                    if palabras[contador] == self.EmpresasAnalisis[i]:
+                        empresa = self.Nombres[i]
+                        if empresa in empresasrep:
+                            empresasrep[empresa] +=1
+                        else:
+                            empresasrep[empresa] = 1
+                #LEE LAS PALABRAS POSITIVAS
+                for j in range(len(self.palabraspositivas)):
+                    if palabras[contador] == self.palabraspositivas[j]:
+                        positivo += 1
+                #LEE LAS PALABRAS NEGATIVAS
+                for j in range(len(self.palabrasnegativas)):
+                    if palabras[contador] == self.palabrasnegativas[j]:
+                        negativo += 1
+            contador += 1
+
+        for e in empresasrep:
+            nuevo = Empresa(date,e,1)
+            nuevo.positivos += positivo
+            nuevo.negativos += negativo
+            empresas.append(nuevo)
+        
+        #VUELVE A ANALIZAR EL MENSAJE PARA CORRESPONDER LOS SERVICIOS
+        pal = message.split() 
+        c = 0
+        servicio = ''
+        serviciosrep = {}
+        while(c < len(pal)):
+            pal[c] = pal[c].replace(',', '')
+            pal[c] = pal[c].replace('.', '')
+            pal[c] = pal[c].replace('!', '')
+            pal[c] = pal[c].replace('?', '')
+            j = 0
+            while(j <len(self.Servicios)):
+                if len(self.Servicios[j].alias) == 0:
+                    if pal[c] == self.Servicios[j].nombre:
+                        servicio = self.Servicios[j].nombre
+                        print(servicio)
+                        if servicio in serviciosrep:
+                            serviciosrep[servicio] +=1
+                        else:
+                            serviciosrep[servicio] = 1
+                else:
+                    k = 0
+                    while(k <len(self.Servicios[j].alias)):
+                        if pal[c] == self.Servicios[j].nombre or pal[c] == self.Servicios[j].alias[k]:
+                            servicio = self.Servicios[j].nombre
+                            print(servicio)
+                            if servicio in serviciosrep:
+                                serviciosrep[servicio] +=1
+                            else:
+                                serviciosrep[servicio] = 1
+                        k+=1
+                j+=1
+            c+=1
+        print(serviciosrep)
+        
+        #AGREGA LAS ESTADISTICAS DE LOS SERVICIOS EN EL MENSAJE
+        for s in serviciosrep:
+            for e in empresas:
+                for i in range(len(self.Servicios)):
+                    if e != None:
+                        if e.nombre == self.Servicios[i].empresa and s == self.Servicios[i].nombre:
+                            new = Servicio(s,date,1)
+                            e.servicios.append(new)
+        print(message)
+        self.MostrarXMLRespuesta(date,red,user,empresas)
+
+    def MostrarXMLRespuesta(self,fecha,red,usuario,empresas):
+        texto = ''
+        texto += '''<respuesta>
+    <fecha> '''+ str(fecha) + ''' </fecha>
+    <red_social> ''' +str(red.capitalize()) + ''' </red_social>
+    <usuario> ''' + str(usuario) + ''' </usuario>
+    <empresas>'''
+        for i in range(len(empresas)):
+            texto+='''
+        <empresa nombre=\"''' + str(empresas[i].nombre) + '''\">'''
+            for j in range(len(empresas[i].servicios)):
+                texto+='''
+            <servicio> ''' + str(empresas[i].servicios[j].nombre) + '''</servicio>'''
+            texto+='''
+        </empresa>'''
+        texto+='''
+    </empresas>'''
+        positivos = 0
+        negativos = 0
+        for i in range(len(empresas)):
+            positivos += empresas[i].positivos
+            negativos += empresas[i].negativos
+        total = positivos + negativos
+        try:
+            porcentajepos = (positivos/total)*100
+            porcentajepos = int(porcentajepos)
+        except:
+            porcentajepos = 0
+        try:
+            porcentajeneg = (negativos/total)*100
+            porcentajeneg = int(porcentajeneg)
+        except:
+            porcentajeneg = 0
+        texto +='''
+    <palabras_positivas> ''' + str(positivos) + '''</palabras_positivas>
+    <palabras_negativas>''' + str(negativos) + '''</palabras_negativas>
+    <sentimiento_positivo> ''' + str(porcentajepos) + '''% </sentimiento_positivo>
+    <sentimiento_negativo> ''' + str(porcentajeneg) + '''% </sentimiento_negativo>'''
+        if positivos ==  negativos:
+            texto+='''
+    <sentimiento_analizado> neutro </sentimiento_analizado>'''
+        elif positivos > negativos:
+            texto+='''
+    <sentimiento_analizado> positivo </sentimiento_analizado>'''
+        elif positivos < negativos:
+            texto+='''
+    <sentimiento_analizado> negativo </sentimiento_analizado>'''
+        texto += '''
+</respuesta>'''
+        self.crearArchivoRespuesta(texto)
+
+    def crearArchivoRespuesta(self, texto):
+        archivo=open("Backend\Database\Respuesta.xml", 'w', encoding='utf8')
+        archivo.write(texto)
+        archivo.close()
