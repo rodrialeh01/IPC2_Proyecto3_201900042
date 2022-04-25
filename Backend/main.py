@@ -13,34 +13,99 @@ cors = CORS(app)
 def index():
     return '<h1>Backend en funcionamiento :D</h1>'
 
+#CREANDO UNA VARIABLE GLOBAL LA CUAL LLAMA A NUESTRO ANALIZADOR DE MENSAJES
 data = Analizador()
 
-@app.route('/datos', methods=['POST'])
+#FUNCION PARA LEER EL ARCHIVO XML Y GENERAR SUS ESTADISTICAS (POST) Y PARA RETORNAR EL ARCHIVO DE SALIDA (GET)
+@app.route('/ConsultarDatos', methods=['POST','GET'])
 def ProcesarXML():
-    try:
-        print(request.data)
-        archivo = request.data.decode('utf-8')
-        data.analizarData(archivo)
-        return jsonify({
-            'message':'Archivo analizado correctamente'
-        })
-    except:
-        return jsonify({
-            'message':'Hubo un error al procesar el archivo'
-        })
+    if request.method == 'POST':
+        try:
+            #print(request.data)
+            archivo = request.data.decode('utf-8')
+            data.analizarData(archivo)
+            return jsonify({
+                'message':'Archivo analizado correctamente'
+            }), 200
+        except:
+            return jsonify({
+                'message':'Hubo un error al procesar el archivo'
+            }), 500
+    elif request.method == 'GET':
+        archivo = open("Backend\Database\Respuestas.xml", 'r', encoding='utf-8')
+        contenido = archivo.read()
+        archivo.close()
+        return contenido
     
-@app.route('/mensaje', methods=['POST'])
+#FUNCION PARA ANALIZAR MENSAJES DE PRUEBA Y GENERAR SUS ESTADISTICAS (POST) Y RETORNAR SU ARCHIVO DE SALIDA (GET)
+@app.route('/ProcesarMensaje', methods=['POST', 'GET'])
 def ProcesarXMLMensaje():
+    if request.method == 'POST':
+        try:
+            mensaje = request.data.decode('utf-8')
+            data.AnalizarMensajePrueba(mensaje)
+            return jsonify({
+                'message':'Mensaje analizado correctamente'
+            }), 200
+        except:
+            return jsonify({
+                'message':'Hubo un error al procesar el archivo'
+            }), 500
+    elif request.method == 'GET':
+        archivo = open("Backend\Database\Respuesta.xml", 'r', encoding='utf-8')
+        contenido = archivo.read()
+        archivo.close()
+        return contenido
+
+#FUNCION PARA RETORNAR LAS ESTADISTICAS POR FECHA O POR NOMBRE DE EMPRESA Y FECHA SOLICITADA
+@app.route('/ConsultaFecha', methods=['POST'])
+def FitrarFecha():
     try:
-        mensaje = request.data.decode('utf-8')
-        data.AnalizarMensajePrueba(mensaje)
-        return jsonify({
-            'message':'Mensaje analizado correctamente'
-        })
+        fecha = None
+        nombre = None
+        try:
+            fecha = request.json['fecha']
+        except:
+            fecha = None
+        try:
+            nombre = request.json['empresa']
+        except:
+            nombre = None
+        
+        if fecha != None and nombre == None or nombre == "":
+            empresas = []
+            for empresa in data.Empresas:
+                if fecha == empresa.fecha:
+                    objeto = {
+                        'nombre': empresa.nombre,
+                        'mensajes_totales': empresa.cantidad,
+                        'mensajes_positivos': empresa.positivos,
+                        'mensajes_negativos': empresa.negativos,
+                        'mensajes_neutros': empresa.neutros
+                    }
+                    empresas.append(objeto)
+            return jsonify(empresas),200
+        elif fecha != None and nombre != None:
+            for empresa in data.Empresas:
+                if str(empresa.fecha) == str(fecha) and str(empresa.nombre) == str(nombre):
+                    return jsonify({
+                        'nombre': empresa.nombre,
+                        'mensajes_totales': empresa.cantidad,
+                        'mensajes_positivos': empresa.positivos,
+                        'mensajes_negativos': empresa.negativos,
+                        'mensajes_neutros': empresa.neutros
+                    }),200
+            return jsonify({
+                'message':'No se encontro nada en la base de datos'
+            }),400
+        else:
+            return jsonify({
+                'message':'No se selecccionó ninguna fecha o empresa'
+            }),400
     except:
         return jsonify({
-            'message':'Hubo un error al procesar el archivo'
-        })
+            'message':'Hubo un error en la peticion'
+        }), 500
 
 #LLAMANDO LA EJECUCION DE LA API EN EL MAIN
 if __name__ == "__main__":

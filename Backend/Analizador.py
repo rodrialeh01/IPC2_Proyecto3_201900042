@@ -18,7 +18,7 @@ class Analizador():
         self.Nombres = []
         
     def analizarData(self, contenido):
-        print(contenido)
+        #print(contenido)
         raiz = ET.XML(contenido)
         self.palabraspositivas = []
         self.palabrasnegativas = []
@@ -30,10 +30,10 @@ class Analizador():
         empre =''
         for element in raiz:
             if element.tag == "diccionario":
-                print('=====================DICCIONARIO=====================')
+                #print('=====================DICCIONARIO=====================')
                 for subelement in element:
                     if subelement.tag == "sentimientos_positivos":
-                        print('=====================POSITIVOS=====================')
+                        #print('=====================POSITIVOS=====================')
                         for subsubelement in subelement:                            
                             palabra =subsubelement.text.strip()
                             palabra = palabra.replace('á','a')
@@ -41,11 +41,11 @@ class Analizador():
                             palabra = palabra.replace('í','i')
                             palabra = palabra.replace('ó','o')
                             palabra = palabra.replace('ú','u')
-                            print('Palabra: ' + str(palabra))
+                            #print('Palabra: ' + str(palabra))
                             palabra = palabra.lower().lstrip().rstrip()
                             self.palabraspositivas.append(palabra)
                     elif subelement.tag == "sentimientos_negativos":
-                        print('=====================NEGATIVOS=====================')
+                        #print('=====================NEGATIVOS=====================')
                         for subsubelement in subelement:
                             palabra =subsubelement.text.lstrip().rstrip()
                             palabra = palabra.replace('á','a')
@@ -53,17 +53,17 @@ class Analizador():
                             palabra = palabra.replace('í','i')
                             palabra = palabra.replace('ó','o')
                             palabra = palabra.replace('ú','u')
-                            print('Palabra: ' + str(palabra))
+                            #print('Palabra: ' + str(palabra))
                             palabra = palabra.lower()
                             self.palabrasnegativas.append(palabra)
                     elif subelement.tag == "empresas_analizar":
-                        print('=====================EMPRESAS A ANALIZAR=====================')
+                        #print('=====================EMPRESAS A ANALIZAR=====================')
                         for subsubelement in subelement:
                             if subsubelement.tag == 'empresa':
-                                print('=====================EMPRESA=====================')
+                                #print('=====================EMPRESA=====================')
                                 for empresa in subsubelement:
                                     if empresa.tag == "nombre":
-                                        print('Nombre: ' + str(empresa.text))
+                                        #print('Nombre: ' + str(empresa.text))
                                         nombre = empresa.text.lstrip().rstrip()
                                         empre = nombre
                                         self.Nombres.append(nombre)
@@ -77,8 +77,8 @@ class Analizador():
                                         empresan = empresan.replace('\t', ' ')
                                         self.EmpresasAnalisis.append(empresan)
                                     elif empresa.tag == "servicio":
-                                        print('     =================SERVICIO==================')
-                                        print('Nombre: ' + str(empresa.attrib.get('nombre')))
+                                        #print('     =================SERVICIO==================')
+                                        #print('Nombre: ' + str(empresa.attrib.get('nombre')))
                                         nombre = empresa.attrib.get('nombre').lstrip().rstrip()
                                         nombre = nombre.lower()
                                         nombre = nombre.replace('á','a')
@@ -90,7 +90,7 @@ class Analizador():
                                         nombre = nombre.replace('\t', ' ')
                                         a = []
                                         for alias in empresa:
-                                            print('Alias: ' + str(alias.text))
+                                            #print('Alias: ' + str(alias.text))
                                             nombre2 = alias.text.lstrip().rstrip()
                                             nombre2 = nombre2.lower()
                                             nombre2 = nombre2.replace('á','a')
@@ -101,27 +101,27 @@ class Analizador():
                                             nombre2 = nombre2.replace('\n', ' ')
                                             nombre2 = nombre2.replace('\t', ' ')
                                             a.append(nombre2)
-                                        print(empre)
+                                        #print(empre)
                                         nuevo = Serviciotemp(empre,nombre)
                                         nuevo.alias = a 
                                         self.Servicios.append(nuevo)
             elif element.tag == "lista_mensajes":
-                print('=====================LISTA DE MENSAJES=====================')
+                #print('=====================LISTA DE MENSAJES=====================')
                 for mensaje in element:
-                    print('Mensaje: ')
+                    #print('Mensaje: ')
                     texto = mensaje.text.lstrip().rstrip()
                     self.AnalizarMensaje(texto)
-                    print('____________________________________')
+                    #print('____________________________________')
 
         
-        for i in range(len(self.Servicios)):
-            print(':::::::::::::::::::::::::::::::::::::::::::::::::::::')
-            print('Nombre: ' + str(self.Servicios[i].nombre))
-            print(':::::::::::ALIAS:::::::::::')
-            for j in range(len(self.Servicios[i].alias)):
-                print('Alias: ' + str(self.Servicios[i].alias[j]))
+        #for i in range(len(self.Servicios)):
+            #print(':::::::::::::::::::::::::::::::::::::::::::::::::::::')
+            #print('Nombre: ' + str(self.Servicios[i].nombre))
+            #print(':::::::::::ALIAS:::::::::::')
+            #for j in range(len(self.Servicios[i].alias)):
+                #print('Alias: ' + str(self.Servicios[i].alias[j]))
 
-        self.MostrarporFecha()
+        #self.MostrarporFecha()
         self.MostrarXML()
 
     def AnalizarMensaje(self, mensaje):
@@ -142,29 +142,29 @@ class Analizador():
         empresasrep ={}
         for i in range(len(palabras)):
             palabras[i] = palabras[i].replace(' ', '')
-            print(palabras[i])
+            #print(palabras[i])
         while(contador < len(palabras)):
             #VERIFICAR LUGAR Y FECHA
             if palabras[contador] == 'lugar' and palabras[contador+1] == 'y' and palabras[contador+2] == 'fecha:':
                 contador += 4
                 fecha = re.compile(r"\d\d\/\d\d\/\d\d\d\d")
                 if re.match(fecha,palabras[contador]).group() == palabras[contador]:
-                    print('Fecha: '+ str(re.match(fecha,palabras[contador]).group()))
+                    #print('Fecha: '+ str(re.match(fecha,palabras[contador]).group()))
                     date = str(re.match(fecha,palabras[contador]).group())
                     hora = re.compile(r"(([01][0-9]|2[0-3])\:[0-5][0-9])")
                     if re.match(hora,palabras[contador+1]).group() == palabras[contador+1]:
-                        print('Hora:' + str(re.match(hora,palabras[contador+1]).group()))
+                        #print('Hora:' + str(re.match(hora,palabras[contador+1]).group()))
                         self.AgregarFecha(date)
                         contador+=1
             elif palabras[contador] == 'lugar' and palabras[contador+1] == 'y' and palabras[contador+2] == 'fecha' and palabras[contador+3] == ':':
                 contador += 5
                 fecha = re.compile(r"\d\d\/\d\d\/\d\d\d\d")
                 if re.match(fecha,palabras[contador]).group() == palabras[contador]:
-                    print('Fecha: '+ str(re.match(fecha,palabras[contador]).group()))
+                    #print('Fecha: '+ str(re.match(fecha,palabras[contador]).group()))
                     date = str(re.match(fecha,palabras[contador]).group())
                     hora = re.compile(r"(([01][0-9]|2[0-3])\:[0-5][0-9])")
                     if re.match(hora,palabras[contador+1]).group() == palabras[contador+1]:
-                        print('Hora:' + str(re.match(hora,palabras[contador+1]).group()))
+                        #print('Hora:' + str(re.match(hora,palabras[contador+1]).group()))
                         self.AgregarFecha(date)
                         contador+=1
 
@@ -173,24 +173,28 @@ class Analizador():
                 contador +=1
                 usuario = re.compile("([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*)|([a-zA-Z0-9.!#$%&'\*\+/=?^_`{|}~-]+)")
                 if re.match(usuario,palabras[contador]).group() == palabras[contador]:
-                    print('Usuario: ' + str(re.match(usuario,palabras[contador]).group()))
+                    #print('Usuario: ' + str(re.match(usuario,palabras[contador]).group()))
+                    pass
             elif palabras[contador] == 'usuario' and palabras[contador+1] == ':':
                 contador +=2
                 usuario = re.compile("([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*)|([a-zA-Z0-9.!#$%&'\*\+/=?^_`{|}~-]+)")
                 if re.match(usuario,palabras[contador]).group() == palabras[contador]:
-                    print('Usuario: ' + str(re.match(usuario,palabras[contador]).group()))
+                    #print('Usuario: ' + str(re.match(usuario,palabras[contador]).group()))
+                    pass
 
             #VERIFICAR RED SOCIAL
             elif palabras[contador] == 'red' and palabras[contador+1] == 'social:':
                 contador += 2
                 redsocial = re.compile("[a-zA-Z0-9.!#$%&'\*\+/=?^_`{|}~-]+")
                 if re.match(redsocial,palabras[contador]).group() == palabras[contador]:
-                    print('Red Social: ' + str(re.match(redsocial,palabras[contador]).group()))
+                    #print('Red Social: ' + str(re.match(redsocial,palabras[contador]).group()))
+                    pass
             elif palabras[contador] == 'red' and palabras[contador+1] == 'social' and palabras[contador+2] == ':':
                 contador += 3
                 redsocial = re.compile("[a-zA-Z0-9.!#$%&'\*\+/=?^_`{|}~-]+")
                 if re.match(redsocial,palabras[contador]).group() == palabras[contador]:
-                    print('Red Social: ' + str(re.match(redsocial,palabras[contador]).group()))
+                    #print('Red Social: ' + str(re.match(redsocial,palabras[contador]).group()))
+                    pass
 
             #LEERA EL MENSAJE
             else:
@@ -222,15 +226,15 @@ class Analizador():
             if positivo == negativo:
                 if self.retornarEmpresa(date,e) != None:
                     self.retornarEmpresa(date,e).neutros += 1
-                print('NEU: ' + str(self.retornarEmpresa(date,e).neutros))
+                #print('NEU: ' + str(self.retornarEmpresa(date,e).neutros))
             elif positivo > negativo:
                 if self.retornarEmpresa(date,e) != None:
                     self.retornarEmpresa(date,e).positivos += 1
-                    print('POS: ' + str(self.retornarEmpresa(date,e).positivos))
+                    #print('POS: ' + str(self.retornarEmpresa(date,e).positivos))
             elif negativo > positivo:
                 if self.retornarEmpresa(date,e) != None:
                     self.retornarEmpresa(date,e).negativos += 1
-                    print('NEG: ' + str(self.retornarEmpresa(date,e).negativos))
+                    #print('NEG: ' + str(self.retornarEmpresa(date,e).negativos))
         
         #VUELVE A ANALIZAR EL MENSAJE PARA CORRESPONDER LOS SERVICIOS
         pal = mensaje.split() 
@@ -247,7 +251,7 @@ class Analizador():
                 if len(self.Servicios[j].alias) == 0:
                     if pal[c] == self.Servicios[j].nombre:
                         servicio = self.Servicios[j].nombre
-                        print(servicio)
+                        #print(servicio)
                         if servicio in serviciosrep:
                             serviciosrep[servicio] +=1
                         else:
@@ -257,7 +261,7 @@ class Analizador():
                     while(k <len(self.Servicios[j].alias)):
                         if pal[c] == self.Servicios[j].nombre or pal[c] == self.Servicios[j].alias[k]:
                             servicio = self.Servicios[j].nombre
-                            print(servicio)
+                            #print(servicio)
                             if servicio in serviciosrep:
                                 serviciosrep[servicio] +=1
                             else:
@@ -265,7 +269,7 @@ class Analizador():
                         k+=1
                 j+=1
             c+=1
-        print(serviciosrep)
+        #print(serviciosrep)
         
         #AGREGA LAS ESTADISTICAS DE LOS SERVICIOS EN EL MENSAJE
         for s in serviciosrep:
@@ -281,7 +285,7 @@ class Analizador():
                                     self.retornarServicio(e,date,s).positivos +=1
                                 elif negativo > positivo:
                                     self.retornarServicio(e,date,s).negativos += 1
-        print(mensaje)
+        #print(mensaje)
 
     def AgregarFecha(self,fecha):
         if len(self.Fechas) == 0:
@@ -445,7 +449,7 @@ class Analizador():
         texto +='''
 </lista_respuestas>'''
 
-        print(texto)
+        #print(texto)
         self.crearArchivo(texto)
 
     def crearArchivo(self, texto):
@@ -469,9 +473,9 @@ class Analizador():
 
     def AnalizarMensajePrueba(self, contenido):
         raiz = ET.XML(contenido)
-        print(raiz.text)
-        print('----------------------------')
-        print(raiz.tag)
+        #print(raiz.text)
+        #print('----------------------------')
+        #print(raiz.tag)
         message = raiz.text.lstrip().rstrip().lower()
         message = message.replace('á','a')
         message = message.replace('é','e')
@@ -481,7 +485,7 @@ class Analizador():
         message = message.replace('\n', ' ')
         message = message.replace('\t', ' ')
         palabras = message.split()
-        print(palabras)
+        #print(palabras)
         contador = 0
         date = ''
         red = ''
@@ -497,22 +501,22 @@ class Analizador():
                 contador += 4
                 fecha = re.compile(r"\d\d\/\d\d\/\d\d\d\d")
                 if re.match(fecha,palabras[contador]).group() == palabras[contador]:
-                    print('Fecha: '+ str(re.match(fecha,palabras[contador]).group()))
+                    #print('Fecha: '+ str(re.match(fecha,palabras[contador]).group()))
                     date = str(re.match(fecha,palabras[contador]).group())
                     hora = re.compile(r"(([01][0-9]|2[0-3])\:[0-5][0-9])")
                     if re.match(hora,palabras[contador+1]).group() == palabras[contador+1]:
-                        print('Hora:' + str(re.match(hora,palabras[contador+1]).group()))
+                        #print('Hora:' + str(re.match(hora,palabras[contador+1]).group()))
                         hour = str(re.match(hora,palabras[contador+1]).group())
                         contador+=1
             elif palabras[contador] == 'lugar' and palabras[contador+1] == 'y' and palabras[contador+2] == 'fecha' and palabras[contador+3] == ':':
                 contador += 5
                 fecha = re.compile(r"\d\d\/\d\d\/\d\d\d\d")
                 if re.match(fecha,palabras[contador]).group() == palabras[contador]:
-                    print('Fecha: '+ str(re.match(fecha,palabras[contador]).group()))
+                    #print('Fecha: '+ str(re.match(fecha,palabras[contador]).group()))
                     date = str(re.match(fecha,palabras[contador]).group())
                     hora = re.compile(r"(([01][0-9]|2[0-3])\:[0-5][0-9])")
                     if re.match(hora,palabras[contador+1]).group() == palabras[contador+1]:
-                        print('Hora:' + str(re.match(hora,palabras[contador+1]).group()))
+                        #print('Hora:' + str(re.match(hora,palabras[contador+1]).group()))
                         hour = str(re.match(hora,palabras[contador+1]).group())
                         contador+=1
 
@@ -521,26 +525,26 @@ class Analizador():
                 contador +=1
                 usuario = re.compile("([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*)|([a-zA-Z0-9.!#$%&'\*\+/=?^_`{|}~-]+)")
                 if re.match(usuario,palabras[contador]).group() == palabras[contador]:
-                    print('Usuario: ' + str(re.match(usuario,palabras[contador]).group()))
+                    #print('Usuario: ' + str(re.match(usuario,palabras[contador]).group()))
                     user = str(re.match(usuario,palabras[contador]).group())
             elif palabras[contador] == 'usuario' and palabras[contador+1] == ':':
                 contador +=2
                 usuario = re.compile("([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*)|([a-zA-Z0-9.!#$%&'\*\+/=?^_`{|}~-]+)")
                 if re.match(usuario,palabras[contador]).group() == palabras[contador]:
-                    print('Usuario: ' + str(re.match(usuario,palabras[contador]).group()))
+                    #print('Usuario: ' + str(re.match(usuario,palabras[contador]).group()))
                     user = str(re.match(usuario,palabras[contador]).group())
             #VERIFICAR RED SOCIAL
             elif palabras[contador] == 'red' and palabras[contador+1] == 'social:':
                 contador += 2
                 redsocial = re.compile("[a-zA-Z0-9.!#$%&'\*\+/=?^_`{|}~-]+")
                 if re.match(redsocial,palabras[contador]).group() == palabras[contador]:
-                    print('Red Social: ' + str(re.match(redsocial,palabras[contador]).group()))
+                    #print('Red Social: ' + str(re.match(redsocial,palabras[contador]).group()))
                     red = str(re.match(redsocial,palabras[contador]).group())
             elif palabras[contador] == 'red' and palabras[contador+1] == 'social' and palabras[contador+2] == ':':
                 contador += 3
                 redsocial = re.compile("[a-zA-Z0-9.!#$%&'\*\+/=?^_`{|}~-]+")
                 if re.match(redsocial,palabras[contador]).group() == palabras[contador]:
-                    print('Red Social: ' + str(re.match(redsocial,palabras[contador]).group()))
+                    #print('Red Social: ' + str(re.match(redsocial,palabras[contador]).group()))
                     red = str(re.match(redsocial,palabras[contador]).group())
 
             #LEERA EL MENSAJE
@@ -589,7 +593,7 @@ class Analizador():
                 if len(self.Servicios[j].alias) == 0:
                     if pal[c] == self.Servicios[j].nombre:
                         servicio = self.Servicios[j].nombre
-                        print(servicio)
+                        #print(servicio)
                         if servicio in serviciosrep:
                             serviciosrep[servicio] +=1
                         else:
@@ -599,7 +603,7 @@ class Analizador():
                     while(k <len(self.Servicios[j].alias)):
                         if pal[c] == self.Servicios[j].nombre or pal[c] == self.Servicios[j].alias[k]:
                             servicio = self.Servicios[j].nombre
-                            print(servicio)
+                            #print(servicio)
                             if servicio in serviciosrep:
                                 serviciosrep[servicio] +=1
                             else:
@@ -607,7 +611,7 @@ class Analizador():
                         k+=1
                 j+=1
             c+=1
-        print(serviciosrep)
+        #print(serviciosrep)
         
         #AGREGA LAS ESTADISTICAS DE LOS SERVICIOS EN EL MENSAJE
         for s in serviciosrep:
@@ -617,7 +621,7 @@ class Analizador():
                         if e.nombre == self.Servicios[i].empresa and s == self.Servicios[i].nombre:
                             new = Servicio(s,date,1)
                             e.servicios.append(new)
-        print(message)
+        #print(message)
         self.MostrarXMLRespuesta(date,red,user,empresas)
 
     def MostrarXMLRespuesta(self,fecha,red,usuario,empresas):
