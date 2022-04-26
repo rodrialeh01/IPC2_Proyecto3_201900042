@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tecnologias Chapinas - Home</title>
+    <!-- Favicons -->
+    <link href="{% static 'inicio/img/favicon.png' %}" rel="icon">
+    <link href="{% static 'inicio/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Montserrat:300,400,500,700" rel="stylesheet">
+
+    <!-- Bootstrap CSS File -->
+    <link href="{% static 'inicio/lib/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Main Stylesheet File -->
+    <link href="{% static 'inicio/css/style.css' %}" rel="stylesheet">
+</head>
+<body>
+      <!-- Fixed navbar -->
+  <div class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand" href=""><b><img src="{% static 'inicio/img/logo.png' %}">  TECNOLOGIAS CHAPINAS S.A.</b></a>
+      </div>
+    </div>
+  </div>
+
+  <div id="headerwrap">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6">
+          <h1>La mejor empresa de estadísticas de Guatemala</h1>
+          <button type="submit" class="btn btn-primary btn-lg" onclick="location.href='/Carga.html'">Iniciar</button>
+        </div>
+        <!-- /col-lg-6 -->
+        <div class="col-lg-6">
+          <img class="img-responsive" src="{% static 'inicio/img/apple-touch-icon.png' %}" alt="">
+        </div>
+        <!-- /col-lg-6 -->
+
+      </div>
+      <!-- /row -->
+    </div>
+    <!-- /container -->
+  </div>
+  <!-- /headerwrap -->
+
+  <!-- JavaScript Libraries -->
+  <script src="{% static 'inicio/lib/jquery/jquery.min.js' %}"></script>
+  <script src="{% static 'inicio/lib/bootstrap/js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'inicio/lib/easing/easing.min.js' %}"></script>
+
+  <!-- Template Main Javascript File -->
+  <script src="{% static 'inicio/js/main.js' %}"></script>
+</body>
+</html>
