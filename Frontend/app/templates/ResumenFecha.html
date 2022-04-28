@@ -45,7 +45,7 @@
                 CARGAR ARCHIVO
             </div>
             <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="/Carga.html">
                     <i class="fas fa-fw fa-file-upload"></i>
                     <span>Cargar Archivo</span></a>
@@ -60,7 +60,7 @@
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-fw fa-chart-bar"></i>
@@ -69,7 +69,7 @@
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="/Datos.html">Consultar Datos</a>
-                        <a class="collapse-item" href="/ResumenFecha.html">Resumen de clasificación</br> por fecha</a>
+                        <a class="collapse-item active" href="/ResumenFecha.html">Resumen de clasificación</br> por fecha</a>
                         <a class="collapse-item" href="">Resumen por rango de </br>fechas</a>
                     </div>
                 </div>
@@ -132,7 +132,7 @@
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
                     <!-- Sidebar Toggle (Topbar) -->
-                    <h1> <i class="fas fa-fw fa-file-upload"></i>Cargar Archivo</h1>
+                    <h1> <i class="fas fa-fw fa-calendar-day"></i>Resumen de clasificación por fecha</h1>
 
                 </nav>
                 <!-- End of Topbar -->
@@ -140,101 +140,7 @@
                 <!-- Begin Page Content -->
                     
                 <div class="container-fluid">
-                    <form action="/cargar/" method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
-                    <div class="custom-file">
-                        <label class="custom-file-label" for="file">Seleccionar Archivo</label>
-                        <input type="file" class="custom-file-input" id="file" name="file" accept="text/xml">
-                        <button type="submit" class="btn btn-primary text btn-lg"><span class="icon text-white-50">
-                            <i class="fas fa-file"></i>
-                        </span>Mostrar</button>
-                    </div>
-                    </form>
-                    <br>
-                    <!-- Content Row -->
-                    <div class="row">
-                        {% if content %} 
-                            <div class="col-lg-6">
-                                <!-- Basic Card Example -->
-                                <div class="card shadow mb-4">
-                                    <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">ENTRADA</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="form-group">
-                                            <textarea class="form-control" label="textarea" name="textarea1" style="resize: none;" rows="23">{{content}}</textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-
-                                <!-- Basic Card Example -->
-                                <div class="card shadow mb-4">
-                                    <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">SALIDA</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="form-group">
-                                            <textarea class="form-control" label="textarea" name="textarea2" style="resize: none;"readonly rows="23">{{response}}</textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% else %}
-                            <div class="col-lg-6">
-                                <!-- Basic Card Example -->
-                                <div class="card shadow mb-4">
-                                    <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">ENTRADA</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="form-group">
-                                            
-                                            <textarea class="form-control" label="textarea" name="textarea1" style="resize: none;" rows="23"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-
-                                <!-- Basic Card Example -->
-                                <div class="card shadow mb-4">
-                                    <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">SALIDA</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="form-group">
-                                            <textarea class="form-control" label="textarea" name="textarea2" style="resize: none;"readonly rows="23"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                        <form action="/enviar/" method="POST" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <div class="col mr-2">
-                            <a href="#" class="btn btn-success btn-icon-split btn-lg">
-                                <span class="icon text-white-50">
-                                    <i class="fas fa-check"></i>
-                                </span>
-                                <button type="submit" class="btn btn-success text btn-lg">Enviar</button>
-                            </a>
-                        </div>
-                        </form>
-                        <form action="/resetear/" method="POST" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <div class="col mr-2">
-                                <a href="#" class="btn btn-danger btn-icon-split btn-lg">
-                                    <span class="icon text-white-50">
-                                        <i class="fas fa-trash"></i>
-                                    </span>
-                                    <button type="submit" class="btn btn-danger text btn-lg">Reset</button>
-                                </a>
-                            </div>
-                        </form>
-                    </div>
-                    <br></br>
+                    
                 </div>
                 </div>
                 <!-- /.container-fluid -->

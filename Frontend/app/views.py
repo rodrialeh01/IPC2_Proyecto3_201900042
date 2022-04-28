@@ -1,6 +1,6 @@
 import re
 from django.shortcuts import render
-from app.forms import FileForm
+from app.forms import FileForm, DeleteForm
 import requests
 import json
 
@@ -12,7 +12,9 @@ def home(request):
 contexto = {
         'content': '',
         'binario': '',
-        'response': ''
+        'response': '',
+        'contenidoar': '',
+        'data': ''
     }
 
 def carga(request):
@@ -28,7 +30,7 @@ def carga(request):
         else:
             contexto['content'] = ''
     else:
-        return render(request, 'Carga.html')
+        return render(request, 'Carga.html', contexto)
     return render(request, 'Carga.html',contexto)
 
 def EnviarArchivo(request):
@@ -37,4 +39,28 @@ def EnviarArchivo(request):
             respuesta = requests.post(endpoint + 'ConsultarDatos', data=contexto['binario'])
             mensaje = json.loads(respuesta.content.decode('utf-8'))
             contexto['response'] = mensaje['contenido']
+            contexto['contenidoar']= mensaje['contenido']
+            contexto['data'] = mensaje['contenido']
+    else:
+        return render(request, 'Carga.html', contexto)
     return render(request, 'Carga.html', contexto)
+
+def ResetearData(request):
+    print(request.method)
+    if request.method == 'POST':
+        respuesta = requests.delete(endpoint + 'reset')
+        mensaje = json.loads(respuesta.content.decode('utf-8'))
+        print(mensaje)
+        contexto['response'] = ''
+        contexto['content'] = ''
+        contexto['binario']=''
+        contexto['contenidoar']=''
+        contexto['data'] =''
+        return render(request, 'Carga.html', contexto)
+    return render(request, 'Carga.html', contexto)
+
+def ConsultarDatos(request):
+    return render(request, 'Datos.html', contexto)
+
+def FiltrarFecha(request):
+    return render(request, 'ResumenFecha.html')

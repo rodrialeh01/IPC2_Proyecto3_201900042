@@ -52,7 +52,7 @@ def ProcesarXMLMensaje():
                 'message':'Hubo un error al procesar el archivo'
             }), 500
     elif request.method == 'GET':
-        archivo = open("Backend\Database\Respuesta.xml", 'r', encoding='utf-8')
+        archivo = open("Database\Respuesta.xml", 'r', encoding='utf-8')
         contenido = archivo.read()
         archivo.close()
         return contenido
@@ -106,6 +106,19 @@ def FitrarFecha():
         return jsonify({
             'message':'Hubo un error en la peticion'
         }), 500
+
+@app.route('/reset', methods=['DELETE'])
+def reset():
+    archivo=open("Database/Respuestas.xml", 'w', encoding='utf-8')
+    archivo.write('')
+    archivo.close()
+    archivo2=open('Database/Respuesta.xml', 'w', encoding='utf-8')
+    archivo2.write('')
+    archivo.close()
+    data = Analizador()
+    return jsonify({
+        'message':  'Se eliminaron los datos'
+    })
 
 #LLAMANDO LA EJECUCION DE LA API EN EL MAIN
 if __name__ == "__main__":
