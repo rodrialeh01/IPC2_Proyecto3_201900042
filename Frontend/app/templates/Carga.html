@@ -1,4 +1,5 @@
 {% load static %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -32,11 +33,10 @@
         <ul class="navbar-nav bg-gradient-dark sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
                 <div class="sidebar-brand-icon rotate-n-15">
-                    <img src="{% static 'inicio/img/logo2.png' %}">
                 </div>
-                <div class="sidebar-brand-text mx-3">TECNOLOGIAS CHAPINAS</div>
+                <div class="sidebar-brand-text mx-3"><img src="{% static 'inicio/img/logo.png' %}"></div>
             </a>
 
             <!-- Divider -->
@@ -46,8 +46,8 @@
             </div>
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" href="">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                <a class="nav-link" href="Carga.html">
+                    <i class="fas fa-fw fa-file-upload"></i>
                     <span>Cargar Archivo</span></a>
             </li>
 
@@ -63,7 +63,7 @@
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-cog"></i>
+                    <i class="fas fa-fw fa-chart-bar"></i>
                     <span>Peticiones</span>
                 </a>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
@@ -78,13 +78,13 @@
             <!-- Nav Item - Utilities Collapse Menu -->
             <li class="nav-item ">
                 <a class="nav-link" href="">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <i class="fas fa-fw fa-file-pdf"></i>
                     <span>Reporte en PDF</span></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                     aria-expanded="true" aria-controls="collapseUtilities">
-                    <i class="fas fa-fw fa-wrench"></i>
+                    <i class="fas fa-fw fa-book"></i>
                     <span>Ayuda</span>
                 </a>
                 <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
@@ -107,7 +107,7 @@
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
                 <a class="nav-link" href="">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <i class="fas fa-fw fa-terminal"></i>
                     <span>Prueba Mensaje </br>de Prueba</span></a>
             </li>
 
@@ -132,86 +132,109 @@
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
                     <!-- Sidebar Toggle (Topbar) -->
-                    <h1> Cargar Archivo</h1>
+                    <h1> <i class="fas fa-fw fa-file-upload"></i>Cargar Archivo</h1>
 
                 </nav>
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
+                    
                 <div class="container-fluid">
-
+                    <form action="/cargar/" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                    <div class="custom-file">
+                        <label class="custom-file-label" for="file">Seleccionar Archivo</label>
+                        <input type="file" class="custom-file-input" id="file" name="file" accept="text/xml">
+                        <button type="submit" class="btn btn-primary text btn-lg"><span class="icon text-white-50">
+                            <i class="fas fa-file"></i>
+                        </span>Mostrar</button>
+                    </div>
+                    </form>
+                    <br>
                     <!-- Content Row -->
                     <div class="row">
-
-                        <div class="col-xl-8 col-lg-7">
-
-                            <!-- Area Chart -->
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Area Chart</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="chart-area">
-                                        <canvas id="myAreaChart"></canvas>
+                        {% if content %} 
+                            <div class="col-lg-6">
+                                <!-- Basic Card Example -->
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">ENTRADA</h6>
                                     </div>
-                                    <hr>
-                                    Styling for the area chart can be found in the
-                                    <code>/js/demo/chart-area-demo.js</code> file.
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <textarea class="form-control" label="textarea" name="textarea1" style="resize: none;" rows="23">{{content}}</textarea>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="col-lg-6">
 
-                            <!-- Bar Chart -->
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Bar Chart</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="chart-bar">
-                                        <canvas id="myBarChart"></canvas>
+                                <!-- Basic Card Example -->
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">SALIDA</h6>
                                     </div>
-                                    <hr>
-                                    Styling for the bar chart can be found in the
-                                    <code>/js/demo/chart-bar-demo.js</code> file.
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <textarea class="form-control" label="textarea" name="textarea2" style="resize: none;"readonly rows="23">{{response}}</textarea>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                        {% else %}
+                            <div class="col-lg-6">
+                                <!-- Basic Card Example -->
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">ENTRADA</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            
+                                            <textarea class="form-control" label="textarea" name="textarea1" style="resize: none;" rows="23"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
 
+                                <!-- Basic Card Example -->
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">SALIDA</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <textarea class="form-control" label="textarea" name="textarea2" style="resize: none;"readonly rows="23"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="col mr-2">
+                            <a href="#" class="btn btn-success btn-icon-split btn-lg">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-check"></i>
+                                </span>
+                                <button type="submit" class="btn btn-success text btn-lg">Enviar</button>
+                            </a>
                         </div>
-
-                        <!-- Donut Chart -->
-                        <div class="col-xl-4 col-lg-5">
-                            <div class="card shadow mb-4">
-                                <!-- Card Header - Dropdown -->
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Donut Chart</h6>
-                                </div>
-                                <!-- Card Body -->
-                                <div class="card-body">
-                                    <div class="chart-pie pt-4">
-                                        <canvas id="myPieChart"></canvas>
-                                    </div>
-                                    <hr>
-                                    Styling for the donut chart can be found in the
-                                    <code>/js/demo/chart-pie-demo.js</code> file.
-                                </div>
-                            </div>
+                        <div class="col mr-2">
+                            <a href="#" class="btn btn-danger btn-icon-split btn-lg">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-trash"></i>
+                                </span>
+                                <button type="submit" class="btn btn-danger text btn-lg">Reset</button>
+                            </a>
                         </div>
                     </div>
-
+                    <br></br>
+                </div>
                 </div>
                 <!-- /.container-fluid -->
 
             </div>
             <!-- End of Main Content -->
-
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Your Website 2020</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
 
         </div>
         <!-- End of Content Wrapper -->
@@ -265,3 +288,4 @@
 </body>
 
 </html>
+{% endblock content %}

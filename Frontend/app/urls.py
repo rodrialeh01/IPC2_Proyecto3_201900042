@@ -5,4 +5,5 @@ urlpatterns = [
     path('', views.home),
     path('Inicio.html', views.home),
     path('Carga.html', views.carga),
+    path('cargar/', views.carga, name='carga'),
 ]
