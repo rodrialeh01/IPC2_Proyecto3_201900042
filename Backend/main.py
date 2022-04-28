@@ -24,18 +24,18 @@ def ProcesarXML():
             #print(request.data)
             archivo = request.data.decode('utf-8')
             data.analizarData(archivo)
+            archivo = open("Database\Respuestas.xml", 'r', encoding='utf-8')
+            contenido = archivo.read()
+            archivo.close()
             return jsonify({
-                'message':'Archivo analizado correctamente'
+                'message':'Archivo analizado correctamente',
+                'contenido': contenido
             }), 200
         except:
             return jsonify({
-                'message':'Hubo un error al procesar el archivo'
+                'message':'Hubo un error al procesar el archivo',
+                'contenido': ""
             }), 500
-    elif request.method == 'GET':
-        archivo = open("Backend\Database\Respuestas.xml", 'r', encoding='utf-8')
-        contenido = archivo.read()
-        archivo.close()
-        return contenido
     
 #FUNCION PARA ANALIZAR MENSAJES DE PRUEBA Y GENERAR SUS ESTADISTICAS (POST) Y RETORNAR SU ARCHIVO DE SALIDA (GET)
 @app.route('/ProcesarMensaje', methods=['POST', 'GET'])

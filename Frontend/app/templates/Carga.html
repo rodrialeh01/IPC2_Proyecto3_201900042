@@ -211,7 +211,9 @@
                                 </div>
                             </div>
                         {% endif %}
-                        <div class="col mr-2">
+                        <form action="/enviar/" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="col mr-2">
                             <a href="#" class="btn btn-success btn-icon-split btn-lg">
                                 <span class="icon text-white-50">
                                     <i class="fas fa-check"></i>
@@ -219,6 +221,7 @@
                                 <button type="submit" class="btn btn-success text btn-lg">Enviar</button>
                             </a>
                         </div>
+                        </form>
                         <div class="col mr-2">
                             <a href="#" class="btn btn-danger btn-icon-split btn-lg">
                                 <span class="icon text-white-50">
