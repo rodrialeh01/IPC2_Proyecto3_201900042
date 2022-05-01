@@ -1,3 +1,4 @@
+from datetime import date
 import re
 from django.shortcuts import render
 from app.forms import FileForm, DeleteForm
@@ -63,4 +64,15 @@ def ConsultarDatos(request):
     return render(request, 'Datos.html', contexto)
 
 def FiltrarFecha(request):
-    return render(request, 'ResumenFecha.html')
+    ctx = {
+        'fechas':[],
+        'empresas':[]
+    }
+    dates = requests.get(endpoint + 'Fechas')
+    d = dates.json()
+    empresas = requests.get(endpoint + 'Empresas')
+    e = empresas.json()
+    ctx['fechas'] = d
+    ctx['empresas'] = e
+
+    return render(request, 'ResumenFecha.html', ctx)

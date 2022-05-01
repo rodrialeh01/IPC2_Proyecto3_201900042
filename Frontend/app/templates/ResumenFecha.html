@@ -149,12 +149,16 @@
                                             <h2 class="text-primary" style="font-size: 24px;">Fecha:</h2>
                                             <select class="browser-default custom-select" onChange="dt1()" id="date" required
                                                 aria-label="Seleccione una fecha">
-                                                <option selected>Seleccionar una fecha</option>
+                                                {% for dates in fechas%}
+                                                    <option>{{dates.date}}</option>
+                                                {% endfor %}
                                             </select>
                                             <h2 class="text-primary" style="font-size: 24px;">Empresa:</h2>
                                             <select class="browser-default custom-select" onChange="dt1()" id="empresa" required
                                                 aria-label="Seleccione una empresa">
-                                                <option selected>Seleccionar una empresa</option>
+                                                {% for empresa in empresas%}
+                                                    <option>{{empresa.business}}</option>
+                                                {% endfor %}
                                             </select>
                                             <br>
                                             <br>

@@ -57,6 +57,26 @@ def ProcesarXMLMensaje():
         archivo.close()
         return contenido
 
+@app.route('/Fechas', methods=['GET'])
+def Fechas():
+    F=[]
+    for d in data.Fechas:
+        objeto ={
+            'date':d 
+        }
+        F.append(objeto)
+    return jsonify(F)
+
+@app.route('/Empresas', methods=['GET'])
+def Empresas():
+    E=[]
+    for e in data.Nombres:
+        objeto ={
+            'business': e
+        }
+        E.append(objeto)
+    return jsonify(E)
+
 #FUNCION PARA RETORNAR LAS ESTADISTICAS POR FECHA O POR NOMBRE DE EMPRESA Y FECHA SOLICITADA
 @app.route('/ConsultaFecha', methods=['POST'])
 def FitrarFecha():
