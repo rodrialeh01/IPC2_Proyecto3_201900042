@@ -140,9 +140,42 @@
                 <!-- Begin Page Content -->
                     
                 <div class="container-fluid">
-                    
-                </div>
-                </div>
+                    <div class="row">
+                            <div class="col-lg-12">
+                                <div class="main-content-inner">
+                                    <br>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h2 class="text-primary" style="font-size: 24px;">Fecha:</h2>
+                                            <select class="browser-default custom-select" onChange="dt1()" id="date" required
+                                                aria-label="Seleccione un juego">
+                                                <option selected>Seleccionar una fecha</option>
+                                            </select>
+                                            <h2 class="text-primary" style="font-size: 24px;">Empresa:</h2>
+                                            <select class="browser-default custom-select" onChange="dt1()" id="empresa" required
+                                                aria-label="Seleccione un juego">
+                                                <option selected>Seleccionar una empresa</option>
+                                            </select>
+                                            <br>
+                                            <br>
+                                            <button type="submit" class="btn btn-primary text btn-lg"><span class="icon text-white-50">
+                                                <i class="fas fa-check"></i>
+                                            </span> Mostrar</button>
+                                        </div>
+                                        <!-- Bar Chart -->
+                                        <div class="card shadow mb-4">
+                                            <div class="card-header py-3">
+                                                <h6 class="m-0 font-weight-bold text-primary"></h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="chart-bar">
+                                                    <canvas id="myBarChart"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                 <!-- /.container-fluid -->
 
             </div>
