@@ -11,7 +11,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Tecnologias Chapinas - Cargar Archivo</title>
+    <title>Tecnologias Chapinas - Resumen de Clasificación por Fecha</title>
 
     <!-- Custom fonts for this template-->
     <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
@@ -73,7 +73,7 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="/Datos.html">Consultar Datos</a>
                         <a class="collapse-item active" href="/ResumenFecha.html">Resumen de clasificación</br> por fecha</a>
-                        <a class="collapse-item" href="">Resumen por rango de </br>fechas</a>
+                        <a class="collapse-item" href="/ResumenRango.html">Resumen por rango de </br>fechas</a>
                     </div>
                 </div>
             </li>
@@ -166,12 +166,9 @@
                                             </select>
                                             <br>
                                             <br>
-                                            <form action="/filtro1/" method="POST" enctype="multipart/form-data">
-                                                {% csrf_token %}
-                                                <button type="button" class="btn btn-primary text btn-lg" onclick="myFunction()"><span class="icon text-white-50">
-                                                    <i class="fas fa-check"></i>
-                                                </span> Mostrar</button>
-                                            </form>
+                                            <button type="button" class="btn btn-primary text btn-lg" onclick="myFunction()"><span class="icon text-white-50">
+                                                <i class="fas fa-check"></i>
+                                            </span> Mostrar</button>
                                             <p id="s1" style="color:white; font-size: 2px;">{{empresasel}}</p>
                                             <p id="s2" style="color:white; font-size: 2px">{{fechasel}}</p>
                                         </div>
@@ -292,11 +289,8 @@
         }
         function graficar1(data){
             var ctx = document.getElementById('grafica');
-            ctx.addEventListener("click",function(){
-                canvas.width=canvas.width;
-            },false);
-            ctx.getContext('2d');
-            var barChart = new Chart(ctx,{
+            var ctx2 = ctx.getContext('2d');
+            var barChart = new Chart(ctx2,{
                 type: 'bar',
                 data: {
                     labels: ['Mensajes Totales', 'Mensajes Positivos', 'Mensajes Neutros', 'Mensajes Negativos'],
@@ -325,7 +319,8 @@
         }
         function graficar2(datos){
             var ctx = document.getElementById('grafica');
-            const mixedChart = new Chart(ctx, {
+            var ctx2 = ctx.getContext('2d');
+            const mixedChart = new Chart(ctx2, {
                 type: 'bar',
                 data: {
                     datasets: [{

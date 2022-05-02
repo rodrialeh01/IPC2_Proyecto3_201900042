@@ -11,7 +11,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Tecnologias Chapinas - Cargar Archivo</title>
+    <title>Tecnologias Chapinas - Resumen por Rango de Fechas</title>
 
     <!-- Custom fonts for this template-->
     <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
@@ -21,7 +21,10 @@
     <link href="{% static 'inicio/img/favicon.png' %}" rel="icon">
     <!-- Custom styles for this template-->
     <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
-
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <!-- amchart css -->
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css"
+        media="all" />
 </head>
 
 <body id="page-top">
@@ -68,9 +71,9 @@
                 </a>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item active" href="/Datos.html">Consultar Datos</a>
+                        <a class="collapse-item" href="/Datos.html">Consultar Datos</a>
                         <a class="collapse-item" href="/ResumenFecha.html">Resumen de clasificación</br> por fecha</a>
-                        <a class="collapse-item" href="/ResumenRango.html">Resumen por rango de </br>fechas</a>
+                        <a class="collapse-item active" href="/ResumenRango.html">Resumen por rango de </br>fechas</a>
                     </div>
                 </div>
             </li>
@@ -132,7 +135,7 @@
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
                     <!-- Sidebar Toggle (Topbar) -->
-                    <h1> <i class="fas fa-fw fa-chart-line"></i>Consultar Datos</h1>
+                    <h1> <i class="fas fa-fw fa-calendar-day"></i>Resumen por rango de fechas</h1>
 
                 </nav>
                 <!-- End of Topbar -->
@@ -140,41 +143,56 @@
                 <!-- Begin Page Content -->
                     
                 <div class="container-fluid">
-                    <!-- Content Row -->
                     <div class="row">
-                        {% if data %} 
                             <div class="col-lg-12">
-                                <!-- Basic Card Example -->
-                                <div class="card shadow mb-4">
-                                    <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">LISTA DE RESPUESTAS</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="form-group">
-                                            <textarea class="form-control" label="textarea" name="textarea1" readonly style="resize: none;" rows="23">{{data}}</textarea>
+                                <div class="main-content-inner">
+                                    <br>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h2 class="text-primary" style="font-size: 24px;">Fecha Inicial:</h2>
+                                            <select class="browser-default custom-select" id="date1" required
+                                                aria-label="Seleccione una fecha">
+                                                {% for dates in fechas%}
+                                                    <option>{{dates.date}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <h2 class="text-primary" style="font-size: 24px;">Fecha Final:</h2>
+                                            <select class="browser-default custom-select" id="date2" required
+                                                aria-label="Seleccione una fecha">
+                                                {% for dates in fechas%}
+                                                    <option>{{dates.date}}</option>
+                                                    {% endfor %}
+                                            </select>
+                                            <h2 class="text-primary" style="font-size: 24px;">Empresa:</h2>
+                                            <select class="browser-default custom-select" id="empresa" required
+                                                aria-label="Seleccione una empresa">
+                                                <option>Todas las empresas</option>
+                                                {% for empresa in empresas%}
+                                                    <option>{{empresa.business}}</option>
+                                                    {% endfor %}
+                                            </select>
+                                            <br>
+                                            <br>
+                                            <button type="button" class="btn btn-primary text btn-lg" onclick="myFunction()"><span class="icon text-white-50">
+                                                <i class="fas fa-check"></i>
+                                            </span> Mostrar</button>
+                                            <p id="s1" style="color:white; font-size: 2px;">{{empresasel}}</p>
+                                            <p id="s2" style="color:white; font-size: 2px">{{fechasel}}</p>
+                                        </div>
+                                        <!-- Bar Chart -->
+                                        <div class="card shadow mb-4">
+                                            <div class="card-header py-3">
+                                                <h6 class="m-0 font-weight-bold text-primary"></h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="chart-bar">
+                                                    <canvas id="grafica" height="60"></canvas>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        {% else %}
-                            <div class="col-lg-12">
-                                <!-- Basic Card Example -->
-                                <div class="card shadow mb-4">
-                                    <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">LISTA DE RESPUESTAS</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="form-group">
-                                            <textarea class="form-control" label="textarea" name="textarea1" readonly style="resize: none;" rows="23"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                    <br></br>
-                </div>
-                </div>
                 <!-- /.container-fluid -->
 
             </div>
@@ -228,7 +246,11 @@
     <script src="{% static 'js/demo/chart-area-demo.js' %}"></script>
     <script src="{% static 'js/demo/chart-pie-demo.js' %}"></script>
     <script src="{% static 'js/demo/chart-bar-demo.js' %}"></script>
-
+    <script>
+        //AQUI VA EL PROCESO DE LA GRAFICA
+    </script>
+    <!-- start chart js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
 </body>
 
 </html>
