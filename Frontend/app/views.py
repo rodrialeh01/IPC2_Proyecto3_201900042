@@ -62,12 +62,13 @@ def ResetearData(request):
 
 def ConsultarDatos(request):
     return render(request, 'Datos.html', contexto)
-
-def FiltrarFecha(request):
-    ctx = {
+ctx = {
         'fechas':[],
-        'empresas':[]
+        'empresas':[],
+        'empresasel': '',
+        'fechasel':''
     }
+def FiltrarFecha(request):
     dates = requests.get(endpoint + 'Fechas')
     d = dates.json()
     empresas = requests.get(endpoint + 'Empresas')
@@ -75,4 +76,11 @@ def FiltrarFecha(request):
     ctx['fechas'] = d
     ctx['empresas'] = e
 
+    return render(request, 'ResumenFecha.html', ctx)
+
+def Filtro1(request):
+    print(request.method)
+    if request.method == 'POST':
+        
+        print('Si: '+ctx['empresasel'])
     return render(request, 'ResumenFecha.html', ctx)

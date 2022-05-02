@@ -10,4 +10,5 @@ urlpatterns = [
     path('cargar/', views.carga, name='carga'),
     path('enviar/', views.EnviarArchivo, name= 'enviar'),
     path('resetear/', views.ResetearData, name= 'resetear'),
+    path('filtro1/', views.Filtro1, name='filtro1'),
 ]

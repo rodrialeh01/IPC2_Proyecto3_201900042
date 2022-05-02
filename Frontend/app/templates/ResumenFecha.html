@@ -21,7 +21,10 @@
     <link href="{% static 'inicio/img/favicon.png' %}" rel="icon">
     <!-- Custom styles for this template-->
     <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
-
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <!-- amchart css -->
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css"
+        media="all" />
 </head>
 
 <body id="page-top">
@@ -147,24 +150,30 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <h2 class="text-primary" style="font-size: 24px;">Fecha:</h2>
-                                            <select class="browser-default custom-select" onChange="dt1()" id="date" required
+                                            <select class="browser-default custom-select" id="date" required
                                                 aria-label="Seleccione una fecha">
                                                 {% for dates in fechas%}
                                                     <option>{{dates.date}}</option>
                                                 {% endfor %}
                                             </select>
                                             <h2 class="text-primary" style="font-size: 24px;">Empresa:</h2>
-                                            <select class="browser-default custom-select" onChange="dt1()" id="empresa" required
+                                            <select class="browser-default custom-select" id="empresa" required
                                                 aria-label="Seleccione una empresa">
+                                                <option>Todas las empresas</option>
                                                 {% for empresa in empresas%}
                                                     <option>{{empresa.business}}</option>
-                                                {% endfor %}
+                                                    {% endfor %}
                                             </select>
                                             <br>
                                             <br>
-                                            <button type="submit" class="btn btn-primary text btn-lg"><span class="icon text-white-50">
-                                                <i class="fas fa-check"></i>
-                                            </span> Mostrar</button>
+                                            <form action="/filtro1/" method="POST" enctype="multipart/form-data">
+                                                {% csrf_token %}
+                                                <button type="button" class="btn btn-primary text btn-lg" onclick="myFunction()"><span class="icon text-white-50">
+                                                    <i class="fas fa-check"></i>
+                                                </span> Mostrar</button>
+                                            </form>
+                                            <p id="s1" style="color:white; font-size: 2px;">{{empresasel}}</p>
+                                            <p id="s2" style="color:white; font-size: 2px">{{fechasel}}</p>
                                         </div>
                                         <!-- Bar Chart -->
                                         <div class="card shadow mb-4">
@@ -173,7 +182,7 @@
                                             </div>
                                             <div class="card-body">
                                                 <div class="chart-bar">
-                                                    <canvas id="myBarChart"></canvas>
+                                                    <canvas id="grafica" height="60"></canvas>
                                                 </div>
                                             </div>
                                         </div>
@@ -233,7 +242,161 @@
     <script src="{% static 'js/demo/chart-area-demo.js' %}"></script>
     <script src="{% static 'js/demo/chart-pie-demo.js' %}"></script>
     <script src="{% static 'js/demo/chart-bar-demo.js' %}"></script>
-
+    <script>
+        function myFunction() {
+            const select1 = document.getElementById('empresa');
+            var empresa = select1.options[select1.selectedIndex].text;
+            const select2 = document.getElementById('date');
+            var fecha = select2.options[select2.selectedIndex].text;
+            console.log(empresa)
+            console.log(fecha)
+            if (empresa != 'Todas las empresas'){
+                var objeto = {
+                    'fecha': fecha,
+                    'empresa': empresa
+                }
+                fetch(`http://localhost:3000/ConsultaFecha`,{
+                    method: 'POST',
+                    body: JSON.stringify(objeto),
+                    headers:{
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',}})
+                    .then(res => res.json())
+                    .catch(err => {
+                        console.error('Error:', err)
+                        alert("Ocurrio un error, ver la consola")
+                    })
+                    .then(response =>{
+                        graficar1(response)
+                })
+            }else if (empresa == 'Todas las empresas'){
+                var objeto = {
+                    'fecha': fecha
+                }
+                console.log(objeto)
+                fetch(`http://localhost:3000/ConsultaFecha`,{
+                    method: 'POST',
+                    body: JSON.stringify(objeto),
+                    headers:{
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',}})
+                    .then(res => res.json())
+                    .catch(err => {
+                        console.error('Error:', err)
+                        alert("Ocurrio un error, ver la consola")
+                    })
+                    .then(response =>{
+                        graficar2(response)
+                })
+            }
+        }
+        function graficar1(data){
+            var ctx = document.getElementById('grafica');
+            ctx.addEventListener("click",function(){
+                canvas.width=canvas.width;
+            },false);
+            ctx.getContext('2d');
+            var barChart = new Chart(ctx,{
+                type: 'bar',
+                data: {
+                    labels: ['Mensajes Totales', 'Mensajes Positivos', 'Mensajes Neutros', 'Mensajes Negativos'],
+                    datasets: [{
+                        label: data.nombre,
+                        data: [data.mensajes_totales, data.mensajes_positivos, data.mensajes_neutros, data.mensajes_negativos],
+                        backgroundColor:[
+                            'rgb(147, 46, 212)',
+                            'rgb(12, 134, 229)',
+                            'rgb(32, 195, 94)',
+                            'rgb(245,131,9)',
+                            'rgb(245,9,113)'
+                        ]
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            })
+        }
+        function graficar2(datos){
+            var ctx = document.getElementById('grafica');
+            const mixedChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    datasets: [{
+                        label: 'Mensajes Totales',
+                        data: mensajestotales(datos),
+                        backgroundColor: 'rgb(147, 46, 212)'
+                    }, {
+                        label: 'Mensajes Positivos',
+                        data: mensajespos(datos),
+                        backgroundColor: 'rgb(12, 134, 229)'
+                    }, {
+                        label: 'Mensajes Neutros',
+                        data: mensajesneu(datos),
+                        backgroundColor: 'rgb(32, 195, 94)'
+                    }, {
+                        label: 'Mensajes Negativos',
+                        data: mensajesneg(datos),
+                        backgroundColor: 'rgb(245,131,9)'
+                    }],
+                    labels: empresasname(datos)
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+        
+        function empresasname(datos){
+            var nombres = []
+            for(i=0; i < datos.length; i++){
+                nombres.push(datos[i].nombre)
+            }
+            return nombres
+        }
+        function mensajestotales(datos){
+            var tot = []
+            for(i=0; i < datos.length; i++){
+                tot.push(datos[i].mensajes_totales)
+            }
+            return tot
+        }
+        function mensajespos(datos){
+            var pos = []
+            for(i=0; i < datos.length; i++){
+                pos.push(datos[i].mensajes_positivos)
+            }
+            return pos
+        }
+        function mensajesneu(datos){
+            var neu = []
+            for(i=0; i < datos.length; i++){
+                neu.push(datos[i].mensajes_neutros)
+            }
+            return neu
+        }
+        function mensajesneg(datos){
+            var neg = []
+            for(i=0; i < datos.length; i++){
+                neg.push(datos[i].mensajes_negativos)
+            }
+            return neg
+        }
+    </script>
+    <!-- start chart js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
 </body>
 
 </html>
