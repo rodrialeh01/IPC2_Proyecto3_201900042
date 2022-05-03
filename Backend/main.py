@@ -39,24 +39,25 @@ def ProcesarXML():
             }), 500
     
 #FUNCION PARA ANALIZAR MENSAJES DE PRUEBA Y GENERAR SUS ESTADISTICAS (POST) Y RETORNAR SU ARCHIVO DE SALIDA (GET)
-@app.route('/ProcesarMensaje', methods=['POST', 'GET'])
+@app.route('/ProcesarMensaje', methods=['POST'])
 def ProcesarXMLMensaje():
     if request.method == 'POST':
         try:
             mensaje = request.data.decode('utf-8')
             data.AnalizarMensajePrueba(mensaje)
+            archivo = open("Database\Respuesta.xml", 'r', encoding='utf-8')
+            contenido = archivo.read()
+            archivo.close()
             return jsonify({
-                'message':'Mensaje analizado correctamente'
+                'message':'Mensaje analizado correctamente',
+                'contenido': contenido
             }), 200
         except:
             return jsonify({
-                'message':'Hubo un error al procesar el archivo'
+                'message':'Hubo un error al procesar el archivo',
+                'contenido': ''
             }), 500
-    elif request.method == 'GET':
-        archivo = open("Database\Respuesta.xml", 'r', encoding='utf-8')
-        contenido = archivo.read()
-        archivo.close()
-        return contenido
+
 
 @app.route('/Fechas', methods=['GET'])
 def Fechas():
@@ -228,6 +229,24 @@ def MostrarMensajesTotales():
                     }
                     L.append(objeto)
         return (jsonify(L))
+    except:
+        return jsonify({
+            'message':'Hubo un error en la peticion'
+        }), 500
+
+@app.route('/Fecha', methods=['POST'])
+def MostrarMensajesxFecha():
+    try:
+        fecha = request.json['fecha']
+        for f in data.MensajesF:
+            if fecha == f.fecha:
+                return jsonify({
+                    'fecha':f.fecha,
+                    'mensajes_totales': f.totales,
+                    'mensajes_positivos': f.positivos,
+                    'mensajes_negativos': f.negativos,
+                    'mensajes_neutros': f.neutros
+                })
     except:
         return jsonify({
             'message':'Hubo un error en la peticion'

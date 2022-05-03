@@ -1,7 +1,8 @@
 from datetime import date
 import re
+from urllib import response
 from django.shortcuts import render
-from app.forms import FileForm, DeleteForm
+from app.forms import FileForm, DeleteForm, AddForm
 import requests
 import json
 
@@ -84,3 +85,22 @@ def FiltrarRango(request):
     ctx['fechas'] = d
     ctx['empresas'] = e
     return render(request, 'ResumenRango.html', ctx)
+c = {
+    'content':'',
+    'response':''
+}
+def MensajePrueba(request):
+    print(request.method)
+    if request.method == 'POST':
+        form = AddForm(request.POST)
+        if form.is_valid():
+            json_data = form.cleaned_data
+            contenido = json_data['mensaje']
+            c['content'] = contenido
+            mensaje = str(contenido).encode('utf-8')
+            response = requests.post(endpoint + 'ProcesarMensaje',data=mensaje)
+            respuesta = json.loads(response.content.decode('utf-8'))
+            c['response'] = respuesta['contenido']
+    else:
+        return render(request, 'Prueba.html', c)
+    return render(request, 'Prueba.html',c)

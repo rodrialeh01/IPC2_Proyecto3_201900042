@@ -5,3 +5,6 @@ class FileForm(forms.Form):
 
 class DeleteForm(forms.Form):
     vacio = forms.CharField(label="Vacio")
+
+class AddForm(forms.Form):
+    mensaje = forms.CharField(label="mensaje")

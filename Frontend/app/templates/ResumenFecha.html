@@ -77,13 +77,6 @@
                     </div>
                 </div>
             </li>
-
-            <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item ">
-                <a class="nav-link" href="">
-                    <i class="fas fa-fw fa-file-pdf"></i>
-                    <span>Reporte en PDF</span></a>
-            </li>
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                     aria-expanded="true" aria-controls="collapseUtilities">
@@ -109,7 +102,7 @@
 
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
-                <a class="nav-link" href="">
+                <a class="nav-link" href="/Prueba.html">
                     <i class="fas fa-fw fa-terminal"></i>
                     <span>Prueba Mensaje </br>de Prueba</span></a>
             </li>
@@ -180,6 +173,16 @@
                                             <div class="card-body">
                                                 <div class="chart-bar">
                                                     <canvas id="grafica" height="60"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card shadow mb-4">
+                                            <div class="card-header py-3">
+                                                <h6 class="m-0 font-weight-bold text-primary">Mensajes de esta fecha: </h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="chart-bar">
+                                                    <canvas id="grafica2" height="60"></canvas>
                                                 </div>
                                             </div>
                                         </div>
@@ -287,6 +290,7 @@
                         console.log(response)
                 })
             }
+            parte2(fecha)
         }
         function graficar1(data){
             var ctx = document.getElementById('grafica');
@@ -354,7 +358,46 @@
                 }
             });
         }
-        
+        function parte2(fecha){
+            var objeto = {
+                'fecha': fecha
+            }
+            fetch(`http://localhost:3000/Fecha`,{
+                method: 'POST',
+                body: JSON.stringify(objeto),
+                headers:{
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',}})
+                .then(res => res.json())
+                .catch(err => {
+                    console.error('Error:', err)
+                    alert("Ocurrio un error, ver la consola")
+                })
+                .then(response =>{
+                    graficar3(response)
+            })
+        }
+        function graficar3(data){
+            var ctx = document.getElementById('grafica2');
+            var ctx2 = ctx.getContext('2d');
+            var barChart = new Chart(ctx2,{
+                type: 'bar',
+                data: {
+                    labels: ['Mensajes Totales','Mensajes Positivos', 'Mensajes Neutros', 'Mensajes Negativos'],
+                    datasets: [{
+                        label: '',
+                        data: [data.mensajes_totales, data.mensajes_positivos, data.mensajes_neutros, data.mensajes_negativos],
+                        backgroundColor:[
+                            'rgb(147, 46, 212)',
+                            'rgb(12, 134, 229)',
+                            'rgb(32, 195, 94)',
+                            'rgb(245,131,9)',
+                            'rgb(245,9,113)'
+                        ]
+                    }]
+                }
+            })
+        }
         function empresasname(datos){
             var nombres = []
             for(i=0; i < datos.length; i++){

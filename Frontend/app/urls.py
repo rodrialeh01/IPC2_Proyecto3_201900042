@@ -8,7 +8,9 @@ urlpatterns = [
     path('Datos.html', views.ConsultarDatos),
     path('ResumenFecha.html', views.FiltrarFecha),
     path('ResumenRango.html', views.FiltrarRango),
+    path('Prueba.html', views.MensajePrueba),
     path('cargar/', views.carga, name='carga'),
     path('enviar/', views.EnviarArchivo, name= 'enviar'),
     path('resetear/', views.ResetearData, name= 'resetear'),
+    path('prueba/', views.MensajePrueba, name='prueba')
 ]

@@ -695,6 +695,6 @@ class Analizador():
         self.crearArchivoRespuesta(texto)
 
     def crearArchivoRespuesta(self, texto):
-        archivo=open("Backend\Database\Respuesta.xml", 'w', encoding='utf8')
+        archivo=open("Database\Respuesta.xml", 'w', encoding='utf8')
         archivo.write(texto)
         archivo.close()
