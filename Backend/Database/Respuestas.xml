@@ -102,4 +102,15 @@
             </empresa>
         </analisis>
     </respuesta>
+    <respuesta>
+        <fecha>01/05/2022</fecha>
+            <mensajes> 
+                <total> 1 </total> 
+                <positivos> 0 </positivos> 
+                <negativos> 0 </negativos> 
+                <neutros> 1 </neutros> 
+            </mensajes> 
+        <analisis>
+        </analisis>
+    </respuesta>
 </lista_respuestas>

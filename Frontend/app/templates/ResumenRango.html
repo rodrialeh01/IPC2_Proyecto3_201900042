@@ -150,19 +150,13 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <h2 class="text-primary" style="font-size: 24px;">Fecha Inicial:</h2>
-                                            <select class="browser-default custom-select" id="date1" required
-                                                aria-label="Seleccione una fecha">
-                                                {% for dates in fechas%}
-                                                    <option>{{dates.date}}</option>
-                                                {% endfor %}
-                                            </select>
+                                            <div class="form-group">
+                                                <input type="date" class="form-control form-control-user" id="fecha1">
+                                            </div>
                                             <h2 class="text-primary" style="font-size: 24px;">Fecha Final:</h2>
-                                            <select class="browser-default custom-select" id="date2" required
-                                                aria-label="Seleccione una fecha">
-                                                {% for dates in fechas%}
-                                                    <option>{{dates.date}}</option>
-                                                    {% endfor %}
-                                            </select>
+                                            <div class="form-group">
+                                                <input type="date" class="form-control form-control-user" id="fecha2">
+                                            </div>
                                             <h2 class="text-primary" style="font-size: 24px;">Empresa:</h2>
                                             <select class="browser-default custom-select" id="empresa" required
                                                 aria-label="Seleccione una empresa">
@@ -182,11 +176,21 @@
                                         <!-- Bar Chart -->
                                         <div class="card shadow mb-4">
                                             <div class="card-header py-3">
-                                                <h6 class="m-0 font-weight-bold text-primary"></h6>
+                                                <h6 class="m-0 font-weight-bold text-primary" id="'titulo"></h6>
                                             </div>
                                             <div class="card-body">
                                                 <div class="chart-bar">
                                                     <canvas id="grafica" height="60"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card shadow mb-4">
+                                            <div class="card-header py-3">
+                                                <h6 class="m-0 font-weight-bold text-primary">Mensajes totales por fecha:</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="chart-bar">
+                                                    <canvas id="grafica2" height="60"></canvas>
                                                 </div>
                                             </div>
                                         </div>
@@ -247,7 +251,240 @@
     <script src="{% static 'js/demo/chart-pie-demo.js' %}"></script>
     <script src="{% static 'js/demo/chart-bar-demo.js' %}"></script>
     <script>
-        //AQUI VA EL PROCESO DE LA GRAFICA
+        function myFunction() {
+            const select1 = document.getElementById('empresa');
+            var empresa = select1.options[select1.selectedIndex].text;
+            var fecha1 = document.getElementById('fecha1').value;
+            fecha1 = fecha1.split('-').reverse().join('/');
+            var fecha2 = document.getElementById('fecha2').value;
+            fecha2 = fecha2.split('-').reverse().join('/');
+            console.log(empresa)
+            console.log(fecha1)
+            console.log(fecha2)
+            if (empresa != 'Todas las empresas'){
+                var objeto = {
+                    'fecha_inicio': fecha1,
+                    'fecha_final': fecha2,
+                    'empresa': empresa
+                }
+                fetch(`http://localhost:3000/ConsultaRangoFechas`,{
+                    method: 'POST',
+                    body: JSON.stringify(objeto),
+                    headers:{
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',}})
+                    .then(res => res.json())
+                    .catch(err => {
+                        console.error('Error:', err)
+                        alert("Ocurrio un error, ver la consola")
+                    })
+                    .then(response =>{
+                        console.log(response)
+                        graficar1(response)
+                })
+                parte2(fecha1,fecha2)
+            }else if (empresa == 'Todas las empresas'){
+                var objeto = {
+                    'fecha_inicio': fecha1,
+                    'fecha_final': fecha2
+                }
+                console.log(objeto)
+                fetch(`http://localhost:3000/ConsultaRangoFechas`,{
+                    method: 'POST',
+                    body: JSON.stringify(objeto),
+                    headers:{
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',}})
+                    .then(res => res.json())
+                    .catch(err => {
+                        console.error('Error:', err)
+                        alert("Ocurrio un error, ver la consola")
+                    })
+                    .then(response =>{
+                        console.log(response)
+                        graficar2(response)
+                })
+                parte2(fecha1,fecha2)
+            }
+        }
+
+        function parte2(f1,f2){
+            var objeto = {
+                'fecha_inicio': f1,
+                'fecha_final': f2
+            }
+            console.log(objeto)
+            fetch(`http://localhost:3000/Totales`,{
+                method: 'POST',
+                body: JSON.stringify(objeto),
+                headers:{
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',}})
+                .then(res => res.json())
+                .catch(err => {
+                    console.error('Error:', err)
+                    alert("Ocurrio un error, ver la consola")
+                })
+                .then(response =>{
+                    console.log(response)
+                    graficar3(response)
+            })
+        }
+
+        function graficar1(datos){
+            var ctx = document.getElementById('grafica');
+            var ctx2 = ctx.getContext('2d');
+            const mixedChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    datasets: [{
+                        label: 'Mensajes Totales',
+                        data: mensajestotales(datos),
+                        backgroundColor: 'rgb(147, 46, 212)'
+                    }, {
+                        label: 'Mensajes Positivos',
+                        data: mensajespos(datos),
+                        backgroundColor: 'rgb(12, 134, 229)'
+                    }, {
+                        label: 'Mensajes Neutros',
+                        data: mensajesneu(datos),
+                        backgroundColor: 'rgb(32, 195, 94)'
+                    }, {
+                        label: 'Mensajes Negativos',
+                        data: mensajesneg(datos),
+                        backgroundColor: 'rgb(245,131,9)'
+                    }],
+                    labels: menfechas(datos)
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+
+        function graficar2(datos){
+            var ctx = document.getElementById('grafica');
+            var ctx2 = ctx.getContext('2d');
+            const mixedChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    datasets: [{
+                        label: 'Mensajes Totales',
+                        data: mensajestotales(datos),
+                        backgroundColor: 'rgb(147, 46, 212)'
+                    }, {
+                        label: 'Mensajes Positivos',
+                        data: mensajespos(datos),
+                        backgroundColor: 'rgb(12, 134, 229)'
+                    }, {
+                        label: 'Mensajes Neutros',
+                        data: mensajesneu(datos),
+                        backgroundColor: 'rgb(32, 195, 94)'
+                    }, {
+                        label: 'Mensajes Negativos',
+                        data: mensajesneg(datos),
+                        backgroundColor: 'rgb(245,131,9)'
+                    }],
+                    labels: empresasname(datos)
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+
+        function graficar3(datos){
+            var ctx = document.getElementById('grafica2');
+            var ctx2 = ctx.getContext('2d');
+            const mixedChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    datasets: [{
+                        label: 'Mensajes Totales',
+                        data: mensajestotales(datos),
+                        backgroundColor: 'rgb(147, 46, 212)'
+                    }, {
+                        label: 'Mensajes Positivos',
+                        data: mensajespos(datos),
+                        backgroundColor: 'rgb(12, 134, 229)'
+                    }, {
+                        label: 'Mensajes Neutros',
+                        data: mensajesneu(datos),
+                        backgroundColor: 'rgb(32, 195, 94)'
+                    }, {
+                        label: 'Mensajes Negativos',
+                        data: mensajesneg(datos),
+                        backgroundColor: 'rgb(245,131,9)'
+                    }],
+                    labels: menfechas(datos)
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+
+        function empresasname(datos){
+            var nombres = []
+            for(i=0; i < datos.length; i++){
+                nombres.push(datos[i].fecha + ' - ' + datos[i].nombre)
+            }
+            return nombres
+        }
+
+        function menfechas(datos){
+            var fechas = []
+            for(i=0; i < datos.length; i++){
+                fechas.push(datos[i].fecha)
+            }
+            return fechas
+        }
+        function mensajestotales(datos){
+            var tot = []
+            for(i=0; i < datos.length; i++){
+                tot.push(datos[i].mensajes_totales)
+            }
+            return tot
+        }
+        function mensajespos(datos){
+            var pos = []
+            for(i=0; i < datos.length; i++){
+                pos.push(datos[i].mensajes_positivos)
+            }
+            return pos
+        }
+        function mensajesneu(datos){
+            var neu = []
+            for(i=0; i < datos.length; i++){
+                neu.push(datos[i].mensajes_neutros)
+            }
+            return neu
+        }
+        function mensajesneg(datos){
+            var neg = []
+            for(i=0; i < datos.length; i++){
+                neg.push(datos[i].mensajes_negativos)
+            }
+            return neg
+        }
     </script>
     <!-- start chart js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>

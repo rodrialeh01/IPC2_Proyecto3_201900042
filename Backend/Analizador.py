@@ -7,26 +7,34 @@ class Serviciotemp():
         self.nombre = nombre
         self.alias = []
 
+class FechaTemp():
+    def __init__(self, fecha, cantidad):
+        self.fecha = fecha
+        self.totales = cantidad
+        self.positivos = 0
+        self.negativos = 0
+        self.neutros = 0
+
 class Analizador():
     def __init__(self):
         self.palabraspositivas = []
         self.palabrasnegativas = []
-        self.Fechas = []
         self.Empresas = []
         self.EmpresasAnalisis = []
         self.Servicios = []
         self.Nombres = []
+        self.MensajesF = []
         
     def analizarData(self, contenido):
         #print(contenido)
         raiz = ET.XML(contenido)
         self.palabraspositivas = []
         self.palabrasnegativas = []
-        self.Fechas = []
         self.Empresas = []
         self.EmpresasAnalisis = []
         self.Servicios = []
         self.Nombres = []
+        self.MensajesF = []
         empre =''
         for element in raiz:
             if element.tag == "diccionario":
@@ -154,7 +162,7 @@ class Analizador():
                     hora = re.compile(r"(([01][0-9]|2[0-3])\:[0-5][0-9])")
                     if re.match(hora,palabras[contador+1]).group() == palabras[contador+1]:
                         #print('Hora:' + str(re.match(hora,palabras[contador+1]).group()))
-                        self.AgregarFecha(date)
+                        self.AgregarMensajeF(date)
                         contador+=1
             elif palabras[contador] == 'lugar' and palabras[contador+1] == 'y' and palabras[contador+2] == 'fecha' and palabras[contador+3] == ':':
                 contador += 5
@@ -165,7 +173,7 @@ class Analizador():
                     hora = re.compile(r"(([01][0-9]|2[0-3])\:[0-5][0-9])")
                     if re.match(hora,palabras[contador+1]).group() == palabras[contador+1]:
                         #print('Hora:' + str(re.match(hora,palabras[contador+1]).group()))
-                        self.AgregarFecha(date)
+                        self.AgregarMensajeF(date)
                         contador+=1
 
             #VERIFICAR USUARIO
@@ -221,11 +229,20 @@ class Analizador():
                         negativo += 1
             contador += 1
 
+        #AGREGANDO AL TOTAL DE MENSAJES
+        if positivo == negativo:
+            self.retornarMensajeF(date).neutros += 1
+        elif positivo > negativo:
+            self.retornarMensajeF(date).positivos += 1
+        elif negativo > positivo:
+            self.retornarMensajeF(date).negativos += 1
+
         for e in empresasrep:
             self.AgregarEmpresa(date,e)
             if positivo == negativo:
                 if self.retornarEmpresa(date,e) != None:
                     self.retornarEmpresa(date,e).neutros += 1
+                    self.mensajesneutros = 1
                 #print('NEU: ' + str(self.retornarEmpresa(date,e).neutros))
             elif positivo > negativo:
                 if self.retornarEmpresa(date,e) != None:
@@ -235,7 +252,6 @@ class Analizador():
                 if self.retornarEmpresa(date,e) != None:
                     self.retornarEmpresa(date,e).negativos += 1
                     #print('NEG: ' + str(self.retornarEmpresa(date,e).negativos))
-        
         #VUELVE A ANALIZAR EL MENSAJE PARA CORRESPONDER LOS SERVICIOS
         pal = mensaje.split() 
         c = 0
@@ -287,15 +303,6 @@ class Analizador():
                                     self.retornarServicio(e,date,s).negativos += 1
         #print(mensaje)
 
-    def AgregarFecha(self,fecha):
-        if len(self.Fechas) == 0:
-            self.Fechas.append(fecha)
-        else:
-            if fecha in self.Fechas:
-                pass
-            else:
-                self.Fechas.append(fecha)
-
     def AgregarEmpresa(self,fecha, empresa):
         if len(self.Empresas) == 0:
             self.Empresas.append(Empresa(fecha,empresa,1))
@@ -344,6 +351,28 @@ class Analizador():
                 for j in range(len(self.Empresas[i].servicios)):
                     if self.Empresas[i].servicios[j].fecha == fecha and self.Empresas[i].servicios[j].nombre == servicio:
                         return self.Empresas[i].servicios[j]
+
+    def AgregarMensajeF(self, fecha):
+        if len(self.MensajesF) == 0:
+            self.MensajesF.append(FechaTemp(fecha, 1))
+        else:
+            if self.VerificarMensajeF(fecha) == True:
+                self.retornarMensajeF(fecha).totales += 1
+            else:
+                self.MensajesF.append(FechaTemp(fecha,1))
+
+    def VerificarMensajeF(self,fecha):
+        encontrado = False
+        for i in range(len(self.MensajesF)):
+            if self.MensajesF[i].fecha == fecha:
+                encontrado = True
+        return encontrado
+
+    def retornarMensajeF(self,fecha):
+        for i in range(len(self.MensajesF)):
+            if self.MensajesF[i].fecha == fecha:
+                return self.MensajesF[i]
+
 
     def MostrarLista(self):
         print('------------------EMPRESAS----------------')
@@ -397,29 +426,19 @@ class Analizador():
         texto = ''
         texto += '''<?xml version="1.0"?> 
 <lista_respuestas>'''
-        for i in range(len(self.Fechas)):
+        for i in range(len(self.MensajesF)):
             texto+='''
     <respuesta>
-        <fecha>''' + str(self.Fechas[i]) + '''</fecha>'''
-            cantidadp = 0
-            cantidadn = 0
-            cantidadne = 0
-            for j in range(len(self.Empresas)):
-                if self.Fechas[i] == self.Empresas[j].fecha:
-                    cantidadp += self.Empresas[j].positivos
-                    cantidadn += self.Empresas[j].negativos
-                    cantidadne += self.Empresas[j].neutros
-            total = cantidadp + cantidadn + cantidadne
-            texto +='''
+        <fecha>''' + str(self.MensajesF[i].fecha) + '''</fecha>
             <mensajes> 
-                <total> '''+str(total)+''' </total> 
-                <positivos> '''+str(cantidadp)+''' </positivos> 
-                <negativos> '''+str(cantidadn)+''' </negativos> 
-                <neutros> '''+str(cantidadne)+''' </neutros> 
+                <total> '''+str(self.MensajesF[i].totales)+''' </total> 
+                <positivos> '''+str(self.MensajesF[i].positivos)+''' </positivos> 
+                <negativos> '''+str(self.MensajesF[i].negativos)+''' </negativos> 
+                <neutros> '''+str(self.MensajesF[i].neutros)+''' </neutros> 
             </mensajes> 
         <analisis>'''
             for j in range(len(self.Empresas)):
-                if self.Fechas[i] == self.Empresas[j].fecha:
+                if self.MensajesF[i].fecha == self.Empresas[j].fecha:
                     texto+='''
             <empresa nombre=\"'''+str(self.Empresas[j].nombre)+'''\">
                 <mensajes> 
@@ -430,7 +449,7 @@ class Analizador():
                 </mensajes>
                     <servicios>'''
                     for k in range(len(self.Empresas[j].servicios)):
-                        if self.Fechas[i] == self.Empresas[j].servicios[k].fecha:
+                        if self.MensajesF[i].fecha == self.Empresas[j].servicios[k].fecha:
                             texto += '''
                         <servicio nombre=\"''' +str(self.Empresas[j].servicios[k].nombre)+ '''\"> 
                             <mensajes> 

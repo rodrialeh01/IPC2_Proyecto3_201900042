@@ -1,6 +1,7 @@
 from flask import Flask, request
 from flask_cors import CORS
 from flask.json import jsonify
+from datetime import datetime, timedelta
 
 from Analizador import Analizador
 
@@ -60,9 +61,9 @@ def ProcesarXMLMensaje():
 @app.route('/Fechas', methods=['GET'])
 def Fechas():
     F=[]
-    for d in data.Fechas:
+    for d in data.MensajesF:
         objeto ={
-            'date':d 
+            'date':d.fecha 
         }
         F.append(objeto)
     return jsonify(F)
@@ -139,6 +140,98 @@ def reset():
     return jsonify({
         'message':  'Se eliminaron los datos'
     })
+
+@app.route('/ConsultaRangoFechas', methods=['POST'])
+def FiltrarRango():
+    try:
+        empresa = None 
+        fecha_inicio = request.json['fecha_inicio']
+        fecha_final = request.json['fecha_final']
+        try:
+            empresa = request.json['empresa']
+        except:
+            empresa = None
+        
+        if empresa != None:
+            if fecha_inicio == fecha_final:
+                for e in data.Empresas:
+                    if str(e.fecha) == str(fecha_inicio) and str(e.nombre) == str(empresa):
+                        return jsonify({
+                            'nombre': e.nombre,
+                            'fecha': e.fecha,
+                            'mensajes_totales': e.cantidad,
+                            'mensajes_positivos': e.positivos,
+                            'mensajes_negativos': e.negativos,
+                            'mensajes_neutros': e.neutros
+                        }),200
+            else:
+                fecha_i = datetime.strptime(fecha_inicio, '%d/%m/%Y')
+                fecha_f = datetime.strptime(fecha_final, '%d/%m/%Y')
+
+                lista_fecha = [(fecha_i + timedelta(days=d)).strftime('%d/%m/%Y') for d in range((fecha_f - fecha_i).days + 1)]
+                L = []
+                for f in lista_fecha:
+                    for e in data.Empresas:
+                        if str(f) == str(e.fecha) and str(empresa) == str(e.nombre):
+                            objeto = {
+                                'nombre': e.nombre,
+                                'fecha': e.fecha,
+                                'mensajes_totales': e.cantidad,
+                                'mensajes_positivos': e.positivos,
+                                'mensajes_negativos': e.negativos,
+                                'mensajes_neutros': e.neutros
+                            }
+                            L.append(objeto)
+                return (jsonify(L))
+        else:
+            fecha_i = datetime.strptime(fecha_inicio, '%d/%m/%Y')
+            fecha_f = datetime.strptime(fecha_final, '%d/%m/%Y')
+
+            lista_fecha = [(fecha_i + timedelta(days=d)).strftime('%d/%m/%Y') for d in range((fecha_f - fecha_i).days + 1)]
+            L = []
+            for f in lista_fecha:
+                for e in data.Empresas:
+                    if f == e.fecha:
+                        objeto = {
+                            'nombre': e.nombre,
+                            'fecha': e.fecha,
+                            'mensajes_totales': e.cantidad,
+                            'mensajes_positivos': e.positivos,
+                            'mensajes_negativos': e.negativos,
+                            'mensajes_neutros': e.neutros
+                        }
+                        L.append(objeto)
+            return (jsonify(L))
+    except:
+        return jsonify({
+            'message':'Hubo un error en la peticion'
+        }), 500
+
+@app.route('/Totales', methods=['POST'])
+def MostrarMensajesTotales():
+    try:
+        fecha_inicio = request.json['fecha_inicio']
+        fecha_final = request.json['fecha_final']
+        fecha_i = datetime.strptime(fecha_inicio, '%d/%m/%Y')
+        fecha_f = datetime.strptime(fecha_final, '%d/%m/%Y')
+        lista_fecha = [(fecha_i + timedelta(days=d)).strftime('%d/%m/%Y') for d in range((fecha_f - fecha_i).days + 1)]
+        L = []
+        for f in lista_fecha:
+            for e in data.MensajesF:
+                if f == e.fecha:
+                    objeto = {
+                        'fecha': e.fecha,
+                        'mensajes_totales': e.totales,
+                        'mensajes_positivos': e.positivos,
+                        'mensajes_negativos': e.negativos,
+                        'mensajes_neutros': e.neutros
+                    }
+                    L.append(objeto)
+        return (jsonify(L))
+    except:
+        return jsonify({
+            'message':'Hubo un error en la peticion'
+        }), 500
 
 #LLAMANDO LA EJECUCION DE LA API EN EL MAIN
 if __name__ == "__main__":
