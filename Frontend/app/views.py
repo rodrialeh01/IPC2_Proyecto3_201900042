@@ -104,3 +104,9 @@ def MensajePrueba(request):
     else:
         return render(request, 'Prueba.html', c)
     return render(request, 'Prueba.html',c)
+
+def Documentacion(request):
+    return render(request,'Documentacion.html')
+
+def Informacion(request):
+    return render(request, 'Informacion.html')
