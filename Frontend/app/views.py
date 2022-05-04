@@ -20,20 +20,23 @@ contexto = {
     }
 
 def carga(request):
-    if request.method == 'POST':
-        form = FileForm(request.POST,request.FILES)
-        if form.is_valid():
-            f = request.FILES['file']
-            xml_binary = f.read()
-            xml = xml_binary.decode('utf-8')
-            print(xml)
-            contexto['content'] = xml
-            contexto['binario'] = xml_binary
+    try:
+        if request.method == 'POST':
+            form = FileForm(request.POST,request.FILES)
+            if form.is_valid():
+                f = request.FILES['file']
+                xml_binary = f.read()
+                xml = xml_binary.decode('utf-8')
+                print(xml)
+                contexto['content'] = xml
+                contexto['binario'] = xml_binary
+            else:
+                contexto['content'] = ''
         else:
-            contexto['content'] = ''
-    else:
-        return render(request, 'Carga.html', contexto)
-    return render(request, 'Carga.html',contexto)
+            return render(request, 'Carga.html', contexto)
+        return render(request, 'Carga.html',contexto)
+    except:
+        return render(request, '404.html')
 
 def EnviarArchivo(request):
     if request.method == 'POST':
@@ -110,3 +113,6 @@ def Documentacion(request):
 
 def Informacion(request):
     return render(request, 'Informacion.html')
+
+def error(request):
+    return render(request, '404.html')

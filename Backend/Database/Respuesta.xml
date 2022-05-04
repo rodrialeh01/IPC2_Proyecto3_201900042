@@ -4,13 +4,13 @@
     <usuario> map0002@usac.edu </usuario>
     <empresas>
         <empresa nombre="USAC">
-        </empresa>
-        <empresa nombre="UVG">
+            <servicio> inscripcion</servicio>
+            <servicio> asignacion</servicio>
         </empresa>
     </empresas>
     <palabras_positivas> 0</palabras_positivas>
-    <palabras_negativas>0</palabras_negativas>
+    <palabras_negativas>2</palabras_negativas>
     <sentimiento_positivo> 0% </sentimiento_positivo>
-    <sentimiento_negativo> 0% </sentimiento_negativo>
-    <sentimiento_analizado> neutro </sentimiento_analizado>
+    <sentimiento_negativo> 100% </sentimiento_negativo>
+    <sentimiento_analizado> negativo </sentimiento_analizado>
 </respuesta>
