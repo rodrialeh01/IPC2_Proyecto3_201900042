@@ -11,9 +11,10 @@ urlpatterns = [
     path('Prueba.html', views.MensajePrueba),
     path('Documentacion.html', views.Documentacion),
     path('Informacion.html', views.Informacion),
-    path('404.html', views.error),
     path('cargar/', views.carga, name='carga'),
     path('enviar/', views.EnviarArchivo, name= 'enviar'),
     path('resetear/', views.ResetearData, name= 'resetear'),
-    path('prueba/', views.MensajePrueba, name='prueba')
+    path('prueba/', views.MensajePrueba, name='prueba'),
+    path('pdf1/', views.GenerarReporte1, name='pdf1'),
+    path('pdf2/', views.GenerarReporte2, name='pdf2'),
 ]

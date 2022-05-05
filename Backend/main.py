@@ -1,3 +1,4 @@
+import json
 from flask import Flask, request
 from flask_cors import CORS
 from flask.json import jsonify
@@ -79,9 +80,14 @@ def Empresas():
         E.append(objeto)
     return jsonify(E)
 
+
+exd = []
+
 #FUNCION PARA RETORNAR LAS ESTADISTICAS POR FECHA O POR NOMBRE DE EMPRESA Y FECHA SOLICITADA
 @app.route('/ConsultaFecha', methods=['POST'])
 def FitrarFecha():
+    global exd
+    exd = []
     try:
         fecha = None
         nombre = None
@@ -106,17 +112,20 @@ def FitrarFecha():
                         'mensajes_neutros': empresa.neutros
                     }
                     empresas.append(objeto)
+                    exd.append(objeto)
             return jsonify(empresas),200
         elif fecha != None and nombre != None:
             for empresa in data.Empresas:
                 if str(empresa.fecha) == str(fecha) and str(empresa.nombre) == str(nombre):
-                    return jsonify({
+                    o = {
                         'nombre': empresa.nombre,
                         'mensajes_totales': empresa.cantidad,
                         'mensajes_positivos': empresa.positivos,
                         'mensajes_negativos': empresa.negativos,
                         'mensajes_neutros': empresa.neutros
-                    }),200
+                    }
+                    exd.append(o)
+                    return jsonify(o),200
             return jsonify({
                 'message':'No se encontro nada en la base de datos'
             }),400
@@ -141,13 +150,21 @@ def reset():
     return jsonify({
         'message':  'Se eliminaron los datos'
     })
-
+fi = ''
+ff = ''
+Ra = []
 @app.route('/ConsultaRangoFechas', methods=['POST'])
 def FiltrarRango():
+    global Ra
+    global fi
+    global ff
+    Ra = []
     try:
         empresa = None 
         fecha_inicio = request.json['fecha_inicio']
+        fi = fecha_inicio
         fecha_final = request.json['fecha_final']
+        ff = fecha_final
         try:
             empresa = request.json['empresa']
         except:
@@ -157,14 +174,16 @@ def FiltrarRango():
             if fecha_inicio == fecha_final:
                 for e in data.Empresas:
                     if str(e.fecha) == str(fecha_inicio) and str(e.nombre) == str(empresa):
-                        return jsonify({
+                        objeto ={
                             'nombre': e.nombre,
                             'fecha': e.fecha,
                             'mensajes_totales': e.cantidad,
                             'mensajes_positivos': e.positivos,
                             'mensajes_negativos': e.negativos,
                             'mensajes_neutros': e.neutros
-                        }),200
+                        }
+                        Ra.append(objeto)
+                        return jsonify(objeto),200
             else:
                 fecha_i = datetime.strptime(fecha_inicio, '%d/%m/%Y')
                 fecha_f = datetime.strptime(fecha_final, '%d/%m/%Y')
@@ -182,8 +201,9 @@ def FiltrarRango():
                                 'mensajes_negativos': e.negativos,
                                 'mensajes_neutros': e.neutros
                             }
+                            Ra.append(objeto)
                             L.append(objeto)
-                return (jsonify(L))
+                return (jsonify(L)), 200
         else:
             fecha_i = datetime.strptime(fecha_inicio, '%d/%m/%Y')
             fecha_f = datetime.strptime(fecha_final, '%d/%m/%Y')
@@ -201,8 +221,9 @@ def FiltrarRango():
                             'mensajes_negativos': e.negativos,
                             'mensajes_neutros': e.neutros
                         }
+                        Ra.append(objeto)
                         L.append(objeto)
-            return (jsonify(L))
+            return (jsonify(L)), 200
     except:
         return jsonify({
             'message':'Hubo un error en la peticion'
@@ -228,29 +249,53 @@ def MostrarMensajesTotales():
                         'mensajes_neutros': e.neutros
                     }
                     L.append(objeto)
-        return (jsonify(L))
+        return (jsonify(L)), 200
     except:
         return jsonify({
             'message':'Hubo un error en la peticion'
         }), 500
-
+F = {}
 @app.route('/Fecha', methods=['POST'])
 def MostrarMensajesxFecha():
+    global F
+    F = {}
     try:
         fecha = request.json['fecha']
         for f in data.MensajesF:
             if fecha == f.fecha:
-                return jsonify({
+                F = {
                     'fecha':f.fecha,
                     'mensajes_totales': f.totales,
                     'mensajes_positivos': f.positivos,
                     'mensajes_negativos': f.negativos,
                     'mensajes_neutros': f.neutros
-                })
+                }
+                return jsonify(F), 200
     except:
         return jsonify({
             'message':'Hubo un error en la peticion'
         }), 500
+
+@app.route('/pdf1', methods=['GET'])
+def RetornarDatos1():
+    global exd
+    return jsonify(exd), 200
+
+@app.route('/pdff1', methods=['GET'])
+def RetornarDatos2():
+    global F
+    return jsonify(F), 200
+
+@app.route('/pdf2', methods=['GET'])
+def RetornarDatos3():
+    global ff
+    global fi
+    global Ra
+    return jsonify({
+        'fecha_inicio': fi,
+        'fecha_final': ff,
+        'dataresponse': Ra
+    }), 200
 
 #LLAMANDO LA EJECUCION DE LA API EN EL MAIN
 if __name__ == "__main__":

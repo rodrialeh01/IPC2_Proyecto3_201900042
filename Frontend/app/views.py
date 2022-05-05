@@ -1,10 +1,14 @@
 from datetime import date
 import re
 from urllib import response
+from django.http import FileResponse
 from django.shortcuts import render
 from app.forms import FileForm, DeleteForm, AddForm
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
 import requests
 import json
+import io
 
 # Create your views here.
 endpoint = 'http://localhost:3000/'
@@ -114,5 +118,62 @@ def Documentacion(request):
 def Informacion(request):
     return render(request, 'Informacion.html')
 
-def error(request):
-    return render(request, '404.html')
+def GenerarReporte1(request):
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter, bottomup=0)
+    datos = requests.get(endpoint + 'pdf1')
+    fecha = requests.get(endpoint + 'pdff1')
+    f = fecha.json()
+    d = datos.json()
+    
+    text_object = p.beginText(40,50)
+    text_object.setFont('Helvetica', 20)
+    text_object.textLine('FECHA: ' + f['fecha'])
+    text_object.setFont('Helvetica', 14)
+    text_object.textLine('Cantidad total de mensajes recibidos: ' + str(f['mensajes_totales']))
+    text_object.textLine('Cantidad total de mensajes positivos: ' + str(f['mensajes_positivos']))
+    text_object.textLine('Cantidad total de mensajes negativos: ' + str(f['mensajes_negativos']))
+    text_object.textLine('Cantidad total de mensajes neutros: ' + str(f['mensajes_neutros']))
+    text_object.textLine('')
+    for data in d:
+        text_object.setFont('Helvetica', 20)
+        text_object.textLine(data['nombre'])
+        text_object.setFont('Helvetica', 14)
+        text_object.textLine('Número total de mensajes que mencionan a ' + str(data['nombre'] + ': ' + str(data['mensajes_totales'])))
+        text_object.textLine('Mensajes positivos: ' + str(data['mensajes_positivos']))
+        text_object.textLine('Mensajes negativos: ' + str(data['mensajes_negativos']))
+        text_object.textLine('Mensajes neutros: ' + str(data['mensajes_neutros']))
+        text_object.textLine('')
+
+    p.drawText(text_object)
+    p.showPage()
+    p.save()
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename='Reporte_Resumen_' + str(f['fecha']) + str('.pdf'))
+
+def GenerarReporte2(request):
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter, bottomup=0)
+    datos = requests.get(endpoint + 'pdf2')
+    data = datos.json()
+
+    text_object = p.beginText(40,50)
+    text_object.setFont('Helvetica', 25)
+    text_object.textLine('RANGO DE FECHAS: ' + str(data['fecha_inicio']) + str(' - ') + str(data['fecha_final']))
+    text_object.textLine('')
+    for datas in data['dataresponse']:
+        text_object.setFont('Helvetica', 20)
+        text_object.textLine(datas['fecha'])
+        text_object.textLine(datas['nombre'])
+        text_object.setFont('Helvetica', 14)
+        text_object.textLine('Número total de mensajes que mencionan a ' + str(datas['nombre'] + ': ' + str(datas['mensajes_totales'])))
+        text_object.textLine('Mensajes positivos: ' + str(datas['mensajes_positivos']))
+        text_object.textLine('Mensajes negativos: ' + str(datas['mensajes_negativos']))
+        text_object.textLine('Mensajes neutros: ' + str(datas['mensajes_neutros']))
+        text_object.textLine('')
+
+    p.drawText(text_object)
+    p.showPage()
+    p.save()
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename='Reporte_Resumen_del_Rango_' + str(data['fecha_inicio']) +'__'+ str(data['fecha_final']) + str('.pdf'))

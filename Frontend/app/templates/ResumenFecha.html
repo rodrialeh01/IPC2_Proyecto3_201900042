@@ -162,9 +162,19 @@
                                             <button type="button" class="btn btn-primary text btn-lg" onclick="myFunction()"><span class="icon text-white-50">
                                                 <i class="fas fa-check"></i>
                                             </span> Mostrar</button>
-                                            <p id="s1" style="color:white; font-size: 2px;">{{empresasel}}</p>
-                                            <p id="s2" style="color:white; font-size: 2px">{{fechasel}}</p>
                                         </div>
+                                        <form action="/pdf1/" method="POST">
+                                            {% csrf_token %}
+                                            <div class="col mr-2">
+                                                <a href="#" class="btn btn-danger btn-icon-split btn-lg">
+                                                    <span class="icon text-white-50">
+                                                        <i class="fas fa-file-pdf"></i>
+                                                    </span>
+                                                    <button type="submit" class="btn btn-danger text btn-lg">Generar Reporte</button>
+                                                </a>
+                                            </div>
+                                        </form>
+                                        <br>
                                         <!-- Bar Chart -->
                                         <div class="card shadow mb-4">
                                             <div class="card-header py-3">
