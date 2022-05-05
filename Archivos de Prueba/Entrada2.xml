@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<solicitud_clasificacion>
+  <diccionario> 
+    <sentimientos_positivos> 
+      <palabra> gud </palabra>
+    </sentimientos_positivos>
+    <sentimientos_negativos> 
+      <palabra> bad </palabra>
+    </sentimientos_negativos>
+    <empresas_analizar> 
+      <empresa> 
+        <nombre> PEPSI </nombre>
+	  </empresa>
+      <empresa> 
+        <nombre> Claro </nombre>
+        <servicio nombre="telefonia"></servicio>
+		<servicio nombre="internet">
+		  <alias> wifi </alias>
+        </servicio>
+	  </empresa>
+    </empresas_analizar>
+  </diccionario>
+  <lista_mensajes>
+    <mensaje> 
+      Lugar y fecha: Guatemala, 01/07/2020 15:01 Usuario: 
+	  map0001@pep.co   Red social: Twitter
+	  La bebida de Pepsi tiene un sabor gud.
+    </mensaje>
+	<mensaje> 
+      Lugar y fecha: Guatemala, 01/04/2021 15:01 Usuario: 
+	  map00023@usac.edu   Red social: Twitter
+	  Claro falla con su servicio de internet, odio que su wifi se cae a cada rato son muy bad.
+    </mensaje>
+  </lista_mensajes>
+</solicitud_clasificacion>

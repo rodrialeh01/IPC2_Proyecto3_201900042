@@ -26,6 +26,7 @@ def ProcesarXML():
             #print(request.data)
             archivo = request.data.decode('utf-8')
             data.analizarData(archivo)
+            data.analizarArchivo(archivo)
             archivo = open("Database\Respuestas.xml", 'r', encoding='utf-8')
             contenido = archivo.read()
             archivo.close()
@@ -38,7 +39,21 @@ def ProcesarXML():
                 'message':'Hubo un error al procesar el archivo',
                 'contenido': ""
             }), 500
-    
+    elif request.method == 'GET':
+        archivo = open("Database\RespuestaSalida.xml", 'r', encoding='utf-8')
+        contenido = archivo.read()
+        archivo.close()
+        return jsonify({
+            'message':'Archivo analizado correctamente',
+            'contenido': contenido
+        }), 200
+    else:
+        return jsonify({
+                'message':'Peticion no valida',
+                'contenido': ""
+            }), 500
+
+
 #FUNCION PARA ANALIZAR MENSAJES DE PRUEBA Y GENERAR SUS ESTADISTICAS (POST) Y RETORNAR SU ARCHIVO DE SALIDA (GET)
 @app.route('/ProcesarMensaje', methods=['POST'])
 def ProcesarXMLMensaje():
@@ -140,13 +155,30 @@ def FitrarFecha():
 
 @app.route('/reset', methods=['DELETE'])
 def reset():
+    global data
     archivo=open("Database/Respuestas.xml", 'w', encoding='utf-8')
     archivo.write('')
     archivo.close()
     archivo2=open('Database/Respuesta.xml', 'w', encoding='utf-8')
     archivo2.write('')
     archivo.close()
-    data = Analizador()
+    archivo3 = open('Database/RespuestaSalida.xml', 'w', encoding='utf-8')
+    archivo3.write('')
+    archivo3.close()
+    data.palabraspositivas = []
+    data.palabrasnegativas = []
+    data.Empresas = []
+    data.EmpresasAnalisis = []
+    data.Servicios = []
+    data.Nombres = []
+    data.MensajesF = []
+    data.palabraspositivasT = []
+    data.palabrasnegativasT = []
+    data.EmpresasT = []
+    data.EmpresasAnalisisT = []
+    data.ServiciosT = []
+    data.NombresT = []
+    data.MensajesFT = []
     return jsonify({
         'message':  'Se eliminaron los datos'
     })
