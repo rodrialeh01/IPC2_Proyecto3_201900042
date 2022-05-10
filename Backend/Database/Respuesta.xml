@@ -1,0 +1,15 @@
+<respuesta>
+    <fecha> 01/04/2022 </fecha>
+    <red_social> Twitter </red_social>
+    <usuario> papasinsal </usuario>
+    <empresas>
+        <empresa nombre="Zelda">
+            <servicio> prueba</servicio>
+        </empresa>
+    </empresas>
+    <palabras_positivas> 2</palabras_positivas>
+    <palabras_negativas>0</palabras_negativas>
+    <sentimiento_positivo> 100% </sentimiento_positivo>
+    <sentimiento_negativo> 0% </sentimiento_negativo>
+    <sentimiento_analizado> positivo </sentimiento_analizado>
+</respuesta>
